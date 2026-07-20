@@ -1,0 +1,18 @@
+{
+  "playerX": 80,
+  "playerY": 480,
+  "tiles": [
+    { "x": 0, "y": 550, "width": 960, "height": 36, "solid": true },
+    { "x": 120, "y": 430, "width": 210, "height": 24, "solid": true },
+    { "x": 390, "y": 470, "width": 190, "height": 24, "solid": true },
+    { "x": 650, "y": 390, "width": 220, "height": 24, "solid": true },
+    { "x": 350, "y": 285, "width": 210, "height": 24, "solid": true },
+    { "x": 70, "y": 250, "width": 190, "height": 24, "solid": true },
+    { "x": 690, "y": 190, "width": 190, "height": 24, "solid": true }
+  ],
+  "enemies": [
+    { "x": 440, "y": 420, "direction": 1 },
+    { "x": 710, "y": 330, "direction": -1 },
+    { "x": 145, "y": 190, "direction": 1 }
+  ]
+}

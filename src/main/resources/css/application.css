@@ -1,0 +1,18 @@
+.root { -fx-font-family: "Microsoft JhengHei", "Noto Sans TC", sans-serif; }
+.screen { -fx-background-color: linear-gradient(to bottom, #102447, #17365f 62%, #214c61); }
+.home-screen { -fx-background-color: radial-gradient(center 50% 35%, radius 75%, #28588a, #102447); }
+.title { -fx-font-size: 76px; -fx-font-weight: 900; -fx-text-fill: #79f28d; -fx-text-alignment: center; -fx-effect: dropshadow(gaussian, #06142d, 12, .5, 0, 6); }
+.subtitle { -fx-font-size: 19px; -fx-text-fill: #d8eaff; }
+.hint { -fx-font-size: 14px; -fx-text-fill: #a9bfd9; }
+.button { -fx-cursor: hand; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 13px 34px; -fx-background-radius: 30px; }
+.primary-button { -fx-background-color: #55dc70; -fx-text-fill: #102447; -fx-effect: dropshadow(gaussian, #08182c, 10, .4, 0, 4); }
+.primary-button:hover { -fx-background-color: #79f28d; -fx-translate-y: -2px; }
+.secondary-button { -fx-background-color: transparent; -fx-border-color: #8eb7dd; -fx-border-radius: 30px; -fx-text-fill: #d8eaff; }
+.secondary-button:hover { -fx-background-color: rgba(255,255,255,.1); }
+.game-screen { -fx-background-color: #102447; }
+.info-panel { -fx-background-color: #091a36; -fx-alignment: center-left; }
+.info-panel .label { -fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #e8f5ff; }
+.result-title { -fx-font-size: 52px; -fx-font-weight: 900; -fx-text-fill: white; }
+.victory-icon, .defeat-icon { -fx-font-size: 100px; -fx-font-weight: 900; }
+.victory-icon { -fx-text-fill: #ffd166; }
+.defeat-icon { -fx-text-fill: #ff6b6b; }
