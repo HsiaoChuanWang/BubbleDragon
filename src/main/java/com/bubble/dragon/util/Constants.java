@@ -9,10 +9,10 @@ public final class Constants {
     public static final double HUD_HEIGHT = 54; // 上方資訊欄高度
 
     // 關卡位置與尺寸
-    public static final double DOOR_X = 850;      
-    public static final double DOOR_Y = 430;     
-    public static final double DOOR_WIDTH = 48;   
-    public static final double DOOR_HEIGHT = 70;  
+    public static final double DOOR_X = 850;
+    public static final double DOOR_Y = 430;
+    public static final double DOOR_WIDTH = 48;
+    public static final double DOOR_HEIGHT = 70;
 
     // 共用物理與遊戲迴圈
     // 速度單位為 pixel/second，重力為 pixel/second²
@@ -37,8 +37,9 @@ public final class Constants {
     public static final double BUBBLE_LIFETIME = 5; // 泡泡最多存在的秒數
     public static final double BUBBLE_HORIZONTAL_MARGIN = 40; // 泡泡超出畫面左右多少距離後消失
     public static final double BUBBLE_TOP_MARGIN = 50; // 泡泡超出畫面上方多少距離後消失
-    public static final double BUBBLE_SIZE = 30; 
+    public static final double BUBBLE_SIZE = 30;
     public static final double SHOOT_COOLDOWN_SECONDS = 0.32; // 兩次發射泡泡之間需等待的秒數
 
-    private Constants() {}
+    private Constants() {
+    }
 }

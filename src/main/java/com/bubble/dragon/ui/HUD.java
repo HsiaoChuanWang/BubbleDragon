@@ -22,7 +22,7 @@ public final class HUD extends HBox {
         // HBox 是一種版面配置 Layout，會把裡面的元件由左到右排列
         // Priority 將多出來的空間給 spacer
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        
+
         getChildren().addAll(hp, enemies, spacer, help);
     }
 

@@ -30,7 +30,7 @@ public final class GameController {
 
     // 使用 Set 保存「目前仍按住」的鍵，偵測即時遊戲的連續輸入
     private final Set<KeyCode> keys = new HashSet<>();
-    
+
     // 勝敗發生時由 BubbleDragonApp 傳入的 callback 負責切換 Scene
     // 遊戲結束時要呼叫的函式
     // Consumer: Java 內建的「接收一個值、不回傳值」的函式 Interface，這裡用來傳遞勝敗結果
@@ -51,65 +51,75 @@ public final class GameController {
         map.enemies.forEach(e -> enemies.add(new Enemy(e.x, e.y, e.direction)));
     }
 
-    public void press(KeyCode key) { keys.add(key); }
-    public void release(KeyCode key) { keys.remove(key); }
+    public void press(KeyCode key) {
+        keys.add(key);
+    }
+
+    public void release(KeyCode key) {
+        keys.remove(key);
+    }
 
     // delta time (時間差) = 代表「上一幀到這一幀經過了多少秒」
     // update(dt) 統一更新
-    //   ├─ 更新計時器
-    //   ├─ 更新玩家
-    //   ├─ 更新敵人
-    //   ├─ 更新泡泡
-    //   ├─ 檢查碰撞
-    //   ├─ 清除失效物件
-    //   └─ 判斷勝敗
+    // ├─ 更新計時器
+    // ├─ 更新玩家
+    // ├─ 更新敵人
+    // ├─ 更新泡泡
+    // ├─ 檢查碰撞
+    // ├─ 清除失效物件
+    // └─ 判斷勝敗
     public void update(double dt) {
-        if (finished) return;
-        
+        if (finished)
+            return;
+
         shootCooldown = Math.max(0, shootCooldown - dt); // 阻止連續射擊泡泡
         player.updateInvulnerability(dt); // 無敵時間倒數
-        updatePlayer(dt); 
-        updateEnemies(dt); 
-        updateBubbles(dt); 
+        updatePlayer(dt);
+        updateEnemies(dt);
+        updateBubbles(dt);
         checkContacts();
 
         // removeIf(...) 是 Java 內建 Collection 介面的方法
         // stream: 把 Collection 變成一個 資料流（Stream） 方便做filter, allMatch
         bubbles.removeIf(b -> !b.isActive());
         doorVisible = enemies.stream().allMatch(e -> e.getState() == EnemyState.DEFEATED);
-        if (player.getHp() <= 0) finish(false);
+        if (player.getHp() <= 0)
+            finish(false);
 
         // OverlapChecker.overlaps: 去檢查玩家是否碰到門
         if (doorVisible && OverlapChecker.overlaps(
-            player.getX(), 
-            player.getY(), 
-            player.getWidth(), 
-            player.getHeight(), 
-            Constants.DOOR_X,
-            Constants.DOOR_Y,
-            Constants.DOOR_WIDTH,
-            Constants.DOOR_HEIGHT
-        )) finish(true);
+                player.getX(),
+                player.getY(),
+                player.getWidth(),
+                player.getHeight(),
+                Constants.DOOR_X,
+                Constants.DOOR_Y,
+                Constants.DOOR_WIDTH,
+                Constants.DOOR_HEIGHT))
+            finish(true);
     }
 
     private void updatePlayer(double dt) {
         // 確認當下一針方向到底是往哪裡
         double direction = (keys.contains(KeyCode.RIGHT) ? 1 : 0) - (keys.contains(KeyCode.LEFT) ? 1 : 0);
-        
+
         // 算出位移
         player.setVelocityX(direction * Constants.PLAYER_SPEED);
 
-        if (direction != 0) player.setFacingRight(direction > 0);
+        if (direction != 0)
+            player.setFacingRight(direction > 0);
 
         boolean jump = keys.contains(KeyCode.SPACE);
 
         // !jumpHeld: 上一幀沒有按空白鍵
-        if (jump && !jumpHeld && player.isOnGround()) { 
-            player.setVelocityY(-Constants.JUMP_SPEED); player.setOnGround(false); 
+        if (jump && !jumpHeld && player.isOnGround()) {
+            player.setVelocityY(-Constants.JUMP_SPEED);
+            player.setOnGround(false);
         }
         jumpHeld = jump;
 
-        if (keys.contains(KeyCode.Z) && shootCooldown == 0) shoot();
+        if (keys.contains(KeyCode.Z) && shootCooldown == 0)
+            shoot();
 
         // 計算掉下來的距離
         player.setVelocityY(player.getVelocityY() + Constants.GRAVITY * dt);
@@ -118,21 +128,19 @@ public final class GameController {
 
         if (player.getHp() <= 0) {
             player.setState(PlayerState.DEAD);
-        } 
-        else if (!player.isOnGround()) {
+        } else if (!player.isOnGround()) {
             player.setState(PlayerState.JUMPING);
-        } 
-        else if (direction == 0) {
+        } else if (direction == 0) {
             player.setState(PlayerState.IDLE);
-        } 
-        else {
+        } else {
             player.setState(PlayerState.MOVING);
         }
     }
 
     private void updateEnemies(double dt) {
         for (Enemy enemy : enemies) {
-            if (enemy.getState() == EnemyState.DEFEATED) continue;
+            if (enemy.getState() == EnemyState.DEFEATED)
+                continue;
 
             if (enemy.getState() == EnemyState.TRAPPED) {
                 // 受困期間只更新倒數；到期後泡泡消失、敵人恢復巡邏
@@ -150,9 +158,10 @@ public final class GameController {
             enemy.setVelocityY(enemy.getVelocityY() + Constants.GRAVITY * dt);
 
             // 記錄移動前的 X 座標，若移動後仍然沒有改變，表示被地磚卡住了，需轉向
-            double before = enemy.getX(); 
+            double before = enemy.getX();
             moveWithTiles(enemy, dt);
-            if (Math.abs(enemy.getX() - before) < .1) enemy.reverse();
+            if (Math.abs(enemy.getX() - before) < .1)
+                enemy.reverse();
         }
     }
 
@@ -167,21 +176,20 @@ public final class GameController {
                 bubble.setY(bubble.getY() + bubble.getVelocityY() * dt);
 
                 // 讓敵人在泡泡置中
-                double centeredEnemyX =
-                        bubble.getX() + (bubble.getWidth() - e.getWidth()) / 2;
-                double centeredEnemyY =
-                        bubble.getY() + (bubble.getHeight() - e.getHeight()) / 2;
+                double centeredEnemyX = bubble.getX() + (bubble.getWidth() - e.getWidth()) / 2;
+                double centeredEnemyY = bubble.getY() + (bubble.getHeight() - e.getHeight()) / 2;
                 e.setX(centeredEnemyX);
                 e.setY(centeredEnemyY);
             } else {
                 // 普通泡泡水平前進，遇到第一名 MOVING 敵人便將其捕捉
                 bubble.setX(bubble.getX() + bubble.getVelocityX() * dt);
                 bubble.setY(bubble.getY() - Constants.BUBBLE_RISE_SPEED * dt);
-                for (Enemy e : enemies) 
+                for (Enemy e : enemies)
                     if (e.getState() == EnemyState.MOVING && OverlapChecker.overlaps(bubble, e)) {
-                         e.trap(); 
-                         bubble.trap(e); 
-                         break; }
+                        e.trap();
+                        bubble.trap(e);
+                        break;
+                    }
             }
 
             // step02. 決定泡泡是否需要消失
@@ -190,15 +198,14 @@ public final class GameController {
                     || bubble.getX() > Constants.WINDOW_WIDTH + Constants.BUBBLE_HORIZONTAL_MARGIN
                     || bubble.getY() < -Constants.BUBBLE_TOP_MARGIN) {
                 if (bubble.hasTrappedEnemy() && bubble.getTrappedEnemy().getState() == EnemyState.TRAPPED)
-                     bubble.getTrappedEnemy().escape();
+                    bubble.getTrappedEnemy().escape();
                 bubble.deactivate();
             }
         }
     }
 
-   
     private void checkContacts() {
-         // 玩家碰到活動敵人會受傷並被反方向彈開
+        // 玩家碰到活動敵人會受傷並被反方向彈開
         for (Enemy enemy : enemies) {
             if (enemy.getState() == EnemyState.MOVING && OverlapChecker.overlaps(player, enemy)) {
                 player.damage();
@@ -212,7 +219,7 @@ public final class GameController {
                 // step03. 計算彈開後的 X 座標，避免玩家被彈到畫面外
                 double knockbackX = player.getX()
                         + knockbackDirection
-                        * Constants.PLAYER_HIT_KNOCKBACK_DISTANCE;
+                                * Constants.PLAYER_HIT_KNOCKBACK_DISTANCE;
                 double minX = Constants.PLAYER_HIT_SCREEN_MARGIN;
                 double maxX = Constants.WINDOW_WIDTH
                         - player.getWidth()
@@ -236,34 +243,33 @@ public final class GameController {
                 : player.getX() - Constants.BUBBLE_SIZE;
 
         double bubbleY = player.getY()
-          + (player.getHeight() - Constants.BUBBLE_SIZE) / 2;
+                + (player.getHeight() - Constants.BUBBLE_SIZE) / 2;
 
         double velocityX = player.isFacingRight() ? Constants.BUBBLE_SPEED : -Constants.BUBBLE_SPEED;
-                
+
         bubbles.add(new Bubble(
                 bubbleX,
                 bubbleY,
-                velocityX
-        ));
+                velocityX));
 
         shootCooldown = Constants.SHOOT_COOLDOWN_SECONDS;
     }
 
-
-    /* moveWithTiles() 是整個遊戲的物理碰撞核心
-        object: 代表要移動的東西
-        負責：
-            根據速度更新位置
-            檢查是否撞到磚塊
-            修正位置、避免穿牆
-            重設速度
-            判斷玩家是否站在地面
-            掉出地圖處理
-    */ 
+    /*
+     * moveWithTiles() 是整個遊戲的物理碰撞核心
+     * object: 代表要移動的東西
+     * 負責：
+     * 根據速度更新位置
+     * 檢查是否撞到磚塊
+     * 修正位置、避免穿牆
+     * 重設速度
+     * 判斷玩家是否站在地面
+     * 掉出地圖處理
+     */
     private void moveWithTiles(GameObject object, double dt) {
         // step01. 更新 X 座標
         object.setX(object.getX() + object.getVelocityX() * dt);
-        
+
         // step02. 檢查 x 座標是否撞到實心地磚，如果撞到，修正 x 座標並把速度歸零 (避免下一幀繼續往牆裡穿)
         for (Tile tile : tiles) {
             if (tile.isSolid() && OverlapChecker.overlaps(object, tile)) {
@@ -281,8 +287,7 @@ public final class GameController {
         double maxX = Constants.WINDOW_WIDTH - object.getWidth();
         double limitedX = Math.max(
                 minX,
-                Math.min(maxX, object.getX())
-        );
+                Math.min(maxX, object.getX()));
         object.setX(limitedX);
 
         // step04. 更新 Y 座標
@@ -304,7 +309,7 @@ public final class GameController {
                 object.setVelocityY(0);
             }
         }
-        
+
         // step07. 如果 object 是玩家，更新玩家的 onGround 狀態
         if (object instanceof Player p) {
             p.setOnGround(grounded);
@@ -321,14 +326,42 @@ public final class GameController {
         }
     }
 
+    private void finish(boolean victory) {
+        if (!finished) {
+            finished = true;
+            resultHandler.accept(victory);
+        }
+    }
 
-    private void finish(boolean victory) { if (!finished) { finished = true; resultHandler.accept(victory); } }
-    public Player getPlayer() { return player; }
-    public List<Tile> getTiles() { return tiles; }
-    public List<Enemy> getEnemies() { return enemies; }
-    public List<Bubble> getBubbles() { return bubbles; }
-    public int getActiveEnemyCount() { return (int) enemies.stream().filter(e -> e.getState() != EnemyState.DEFEATED).count(); }
-    public boolean isDoorVisible() { return doorVisible; }
-    public double getDoorX() { return Constants.DOOR_X; }
-    public double getDoorY() { return Constants.DOOR_Y; }
+    public Player getPlayer() {
+        return player;
+    }
+
+    public List<Tile> getTiles() {
+        return tiles;
+    }
+
+    public List<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public List<Bubble> getBubbles() {
+        return bubbles;
+    }
+
+    public int getActiveEnemyCount() {
+        return (int) enemies.stream().filter(e -> e.getState() != EnemyState.DEFEATED).count();
+    }
+
+    public boolean isDoorVisible() {
+        return doorVisible;
+    }
+
+    public double getDoorX() {
+        return Constants.DOOR_X;
+    }
+
+    public double getDoorY() {
+        return Constants.DOOR_Y;
+    }
 }

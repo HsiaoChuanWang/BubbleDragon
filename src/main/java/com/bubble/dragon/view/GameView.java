@@ -15,7 +15,7 @@ public final class GameView {
     private final BubbleDragonApp app;
 
     // 負責接收鍵盤狀態、更新所有實體、處理物理與碰撞，並判斷勝敗
-    private final GameController controller; 
+    private final GameController controller;
 
     // 藉由取得當下的位置刷新 UI，只讀取 GameController 狀態，不修改邏輯
     private final GameCanvas canvas = new GameCanvas();
@@ -36,36 +36,46 @@ public final class GameView {
     }
 
     public Scene createScene() {
-        BorderPane root = new BorderPane(canvas, info, null, null, null); root.getStyleClass().add("game-screen");
+        BorderPane root = new BorderPane(canvas, info, null, null, null);
+        root.getStyleClass().add("game-screen");
         Scene scene = new Scene(root, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
-        
+
         // Controller 保存按鍵集合，因此長按方向鍵時可在每一幀持續移動。
         // 按下按鍵 時執行 setOnKeyPressed
         // 按其他按鍵就只是把它keep下來
-        scene.setOnKeyPressed(event -> { if (event.getCode() == KeyCode.ESCAPE) app.showHome(); else controller.press(event.getCode()); });
-        
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ESCAPE)
+                app.showHome();
+            else
+                controller.press(event.getCode());
+        });
+
         // 放開按鍵時，通知 Controller 這個按鍵已經不再被按下
         scene.setOnKeyReleased(event -> controller.release(event.getCode()));
         return scene;
     }
 
-    public void start() { 
+    public void start() {
         // 立即顯示玩家生命值與敵人數量
         info.update(controller.getPlayer().getHp(), controller.getActiveEnemyCount());
 
         // 立即把玩家、敵人、地圖和泡泡等目前狀態畫到 Canvas
-        canvas.render(controller); 
-        
-        // 開始每幀呼叫 frame()，讓遊戲持續更新
-        loop.start(); }
+        canvas.render(controller);
 
-    public void stop() { loop.stop(); }
-    
+        // 開始每幀呼叫 frame()，讓遊戲持續更新
+        loop.start();
+    }
+
+    public void stop() {
+        loop.stop();
+    }
+
     // frame 定義「每一幀要做什麼」
-    private void frame(double dt) { 
+    private void frame(double dt) {
         // 每次準備畫出新畫面前，先計算遊戲中的物件現在應該變成什麼狀態
-        controller.update(dt); 
-        
-        info.update(controller.getPlayer().getHp(), controller.getActiveEnemyCount()); 
-        canvas.render(controller); }
+        controller.update(dt);
+
+        info.update(controller.getPlayer().getHp(), controller.getActiveEnemyCount());
+        canvas.render(controller);
+    }
 }

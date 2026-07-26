@@ -13,15 +13,23 @@ public final class GameLoop extends AnimationTimer {
     private final DoubleConsumer frame; // 影格 frame 指畫面更新一次
     private long previous; // long: 目前時間（奈秒）
 
-    public GameLoop(DoubleConsumer frame) { this.frame = frame; }
+    public GameLoop(DoubleConsumer frame) {
+        this.frame = frame;
+    }
 
     // 呼叫 start() 後，JavaFX 會在每次畫面更新時呼叫 handle(now)
     @Override
-    public void start() { previous = 0; super.start(); }
+    public void start() {
+        previous = 0;
+        super.start();
+    }
 
     @Override
     public void handle(long now) {
-        if (previous == 0) { previous = now; return; }
+        if (previous == 0) {
+            previous = now;
+            return;
+        }
 
         // 設置上限，避免視窗卡頓時角色一次穿過整個平台
         double dt = Math.min((now - previous) / 1_000_000_000.0, Constants.MAX_DELTA);

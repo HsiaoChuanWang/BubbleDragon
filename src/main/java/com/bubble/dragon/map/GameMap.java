@@ -3,7 +3,6 @@ package com.bubble.dragon.map;
 import java.util.ArrayList;
 import java.util.List;
 
-
 // 對應地圖 JSON 的資料物件，只負責儲存資料
 // Jackson 是 Java 常用的 JSON 處理函式庫，負責在「JSON 資料」和「Java 物件」之間進行轉換
 public final class GameMap {
@@ -17,7 +16,8 @@ public final class GameMap {
         public boolean solid = true;
 
         // 供 Jackson 建立物件並填入 JSON 資料
-        public TileData() {}
+        public TileData() {
+        }
     }
 
     public static final class EnemyData {
@@ -25,6 +25,7 @@ public final class GameMap {
         public int direction = 1;
 
         // 供 Jackson 建立物件並填入 JSON 資料
-        public EnemyData() {}
+        public EnemyData() {
+        }
     }
 }

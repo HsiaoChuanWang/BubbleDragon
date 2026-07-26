@@ -13,22 +13,54 @@ public final class Player extends GameObject {
     private int hp = INITIAL_HP;
     private boolean facingRight = true; // 角色面向哪裡
     private boolean onGround;
-    private double invulnerableTime; 
+    private double invulnerableTime;
 
-    public Player(double x, double y) { super(x, y, WIDTH, HEIGHT); }
-    public PlayerState getState() { return state; }
-    public void setState(PlayerState state) { this.state = state; }
-    public int getHp() { return hp; }
-    public boolean isFacingRight() { return facingRight; }
-    public void setFacingRight(boolean facingRight) { this.facingRight = facingRight; }
-    public boolean isOnGround() { return onGround; }
-    public void setOnGround(boolean onGround) { this.onGround = onGround; }
-    public boolean isInvulnerable() { return invulnerableTime > 0; }
-    public void updateInvulnerability(double dt) { invulnerableTime = Math.max(0, invulnerableTime - dt); }
+    public Player(double x, double y) {
+        super(x, y, WIDTH, HEIGHT);
+    }
+
+    public PlayerState getState() {
+        return state;
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
+    }
+
+    public int getHp() {
+        return hp;
+    }
+
+    public boolean isFacingRight() {
+        return facingRight;
+    }
+
+    public void setFacingRight(boolean facingRight) {
+        this.facingRight = facingRight;
+    }
+
+    public boolean isOnGround() {
+        return onGround;
+    }
+
+    public void setOnGround(boolean onGround) {
+        this.onGround = onGround;
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerableTime > 0;
+    }
+
+    public void updateInvulnerability(double dt) {
+        invulnerableTime = Math.max(0, invulnerableTime - dt);
+    }
+
     public void damage() {
-        if (isInvulnerable() || hp <= 0) return;
+        if (isInvulnerable() || hp <= 0)
+            return;
         hp--;
         invulnerableTime = INVULNERABILITY_DURATION_SECONDS;
-        if (hp == 0) state = PlayerState.DEAD;
+        if (hp == 0)
+            state = PlayerState.DEAD;
     }
 }

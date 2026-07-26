@@ -17,12 +17,31 @@ public final class Bubble extends GameObject {
         super(x, y, WIDTH, HEIGHT);
         this.velocityX = velocityX;
     }
-    public void updateAge(double dt) { age += dt; }
-    public double getAge() { return age; }
-    public boolean isActive() { return active; }
-    public void deactivate() { active = false; }
-    public Enemy getTrappedEnemy() { return trappedEnemy; }
-    public boolean hasTrappedEnemy() { return trappedEnemy != null; }
+
+    public void updateAge(double dt) {
+        age += dt;
+    }
+
+    public double getAge() {
+        return age;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void deactivate() {
+        active = false;
+    }
+
+    public Enemy getTrappedEnemy() {
+        return trappedEnemy;
+    }
+
+    public boolean hasTrappedEnemy() {
+        return trappedEnemy != null;
+    }
+
     public void trap(Enemy enemy) {
         trappedEnemy = enemy;
         velocityX = 0;

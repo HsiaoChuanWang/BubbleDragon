@@ -6,7 +6,8 @@ import com.bubble.dragon.entity.GameObject;
 // Axis-Aligned Bounding Box (AABB) collision detection 軸對齊邊界框
 // 不管物件的形狀，都用方正的隱形矩形（且不能旋轉）包住，計算這 2 個矩形 (a 和 b) 有沒有疊在一起
 public final class OverlapChecker {
-    private OverlapChecker() {}
+    private OverlapChecker() {
+    }
 
     public static boolean overlaps(GameObject a, GameObject b) {
         return overlaps(a.getX(), a.getY(), a.getWidth(), a.getHeight(),
@@ -19,7 +20,7 @@ public final class OverlapChecker {
     // ay < by + bh：A 的上邊界，必須在 B 的下邊界之上
     // ay + ah > by：A 的下邊界，必須在 B 的上邊界之下
     public static boolean overlaps(double ax, double ay, double aw, double ah,
-                                   double bx, double by, double bw, double bh) {
+            double bx, double by, double bw, double bh) {
         // 僅邊緣相接不算重疊，因此使用嚴格小於與大於
         return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
     }

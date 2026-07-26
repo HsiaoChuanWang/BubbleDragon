@@ -16,13 +16,36 @@ public final class Enemy extends GameObject {
         super(x, y, WIDTH, HEIGHT);
         this.direction = direction >= 0 ? 1 : -1;
     }
-    public EnemyState getState() { return state; }
-    public CountdownTimer getTrapTimer() { return trapTimer; }
-    public int getDirection() { return direction; }
-    public void reverse() { direction *= -1; }
-    public void trap() { state = EnemyState.TRAPPED; 
+
+    public EnemyState getState() {
+        return state;
+    }
+
+    public CountdownTimer getTrapTimer() {
+        return trapTimer;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
+    public void reverse() {
+        direction *= -1;
+    }
+
+    public void trap() {
+        state = EnemyState.TRAPPED;
         velocityX = velocityY = 0; // 將速度歸零避免移動
-        trapTimer.start(); }
-    public void escape() { state = EnemyState.MOVING; trapTimer.reset(); }
-    public void defeat() { state = EnemyState.DEFEATED; trapTimer.stop(); }
+        trapTimer.start();
+    }
+
+    public void escape() {
+        state = EnemyState.MOVING;
+        trapTimer.reset();
+    }
+
+    public void defeat() {
+        state = EnemyState.DEFEATED;
+        trapTimer.stop();
+    }
 }
