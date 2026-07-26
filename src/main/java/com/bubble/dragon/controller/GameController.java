@@ -357,6 +357,10 @@ public final class GameController {
         return doorVisible;
     }
 
+    public boolean isShooting() {
+        return shootCooldown > 0;
+    }
+
     public double getDoorX() {
         return Constants.DOOR_X;
     }

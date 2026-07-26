@@ -4,16 +4,50 @@ import com.bubble.dragon.controller.GameController;
 import com.bubble.dragon.entity.enemy.Enemy;
 import com.bubble.dragon.entity.enemy.EnemyState;
 import com.bubble.dragon.entity.player.Player;
+import com.bubble.dragon.entity.player.PlayerState;
 import com.bubble.dragon.entity.weapon.Bubble;
 import com.bubble.dragon.map.Tile;
 import com.bubble.dragon.util.Constants;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public final class GameCanvas extends Canvas {
+    private static final Image PLAYER_STANDING_IMAGE = new Image(
+            GameCanvas.class.getResource("/images/stand.png").toExternalForm());
+    private static final Image PLAYER_LEFT_LEG_IMAGE = new Image(
+            GameCanvas.class.getResource("/images/left_leg.png").toExternalForm());
+    private static final Image PLAYER_RIGHT_LEG_IMAGE = new Image(
+            GameCanvas.class.getResource("/images/right_leg.png").toExternalForm());
+    private static final Image PLAYER_BLOW_IMAGE = new Image(
+            GameCanvas.class.getResource("/images/blow.png").toExternalForm());
+    private static final Image[] PLAYER_WALK_IMAGES = {
+            PLAYER_LEFT_LEG_IMAGE,
+            PLAYER_STANDING_IMAGE,
+            PLAYER_RIGHT_LEG_IMAGE,
+            PLAYER_STANDING_IMAGE
+    };
+    private static final long WALK_FRAME_NANOS = 60_000_000;
+
+    // 從原圖的哪個位置開始裁切，以及要保留的範圍。
+    private static final double PLAYER_IMAGE_CROP_X = 347;
+    private static final double PLAYER_IMAGE_CROP_Y = 0;
+    private static final double PLAYER_IMAGE_CROP_WIDTH = 741;
+    private static final double PLAYER_IMAGE_CROP_HEIGHT = 872;
+
+    // 遊戲中的顯示寬度；高度會依裁切範圍等比例計算。
+    private static final double PLAYER_IMAGE_WIDTH = 100;
+    private static final double PLAYER_IMAGE_HEIGHT = PLAYER_IMAGE_WIDTH
+            * PLAYER_IMAGE_CROP_HEIGHT
+            / PLAYER_IMAGE_CROP_WIDTH;
+    private static final double PLAYER_INVULNERABLE_OPACITY = 0.48;
+
+    private long walkAnimationStart;
+    private boolean wasWalking;
+
     // 畫布大小
     public GameCanvas() {
         super(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT - Constants.HUD_HEIGHT);
@@ -58,11 +92,7 @@ public final class GameCanvas extends Canvas {
         }
 
         Player p = game.getPlayer();
-        g.setGlobalAlpha(p.isInvulnerable() ? .48 : 1);
-        g.setFill(Color.web("#55dc70"));
-        g.fillRoundRect(p.getX(), p.getY(), p.getWidth(), p.getHeight(), 18, 18);
-        drawEyes(g, p.getX(), p.getY(), p.getWidth());
-        g.setGlobalAlpha(1);
+        drawPlayer(g, p, game.isShooting());
 
         if (game.isDoorVisible()) {
             g.setFill(Color.web("#ffd166"));
@@ -79,6 +109,65 @@ public final class GameCanvas extends Canvas {
             g.setFont(Font.font(18));
             g.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
         }
+    }
+
+    private void drawPlayer(GraphicsContext g, Player player, boolean shooting) {
+        // 玩家剛開始走路時記錄目前時間，讓走路動畫從第一張圖開始播放。
+        boolean walking = player.getState() == PlayerState.MOVING;
+        long now = System.nanoTime();
+        if (walking && !wasWalking)
+            walkAnimationStart = now;
+        wasWalking = walking;
+
+        Image playerImage = shooting ? PLAYER_BLOW_IMAGE : PLAYER_STANDING_IMAGE;
+        if (walking && !shooting) {
+            int frameIndex = (int) ((now - walkAnimationStart) / WALK_FRAME_NANOS
+                    % PLAYER_WALK_IMAGES.length);
+            playerImage = PLAYER_WALK_IMAGES[frameIndex];
+        }
+
+        // 保存目前的透明度與座標方向。
+        // 畫玩家時會修改透明度，面向左邊時還會翻轉座標；
+        // 畫完後可用 restore() 恢復，避免影響後面的出口等圖案。
+        g.save();
+
+        // 玩家在無敵時間內顯示為 48% 不透明，其他時候保持完全不透明。
+        g.setGlobalAlpha(player.isInvulnerable() ? PLAYER_INVULNERABLE_OPACITY : 1);
+
+        // 玩家位置與寬高形成一個隱形矩形，遊戲用它判斷地面、牆壁和敵人碰撞。
+        // 角色圖片可能比這個矩形大，因此將圖片水平置中，並讓圖片底部對齊矩形底部，
+        // 使圖片中的腳和遊戲判定的站立位置一致。
+        double playerImageX = player.getX() + (player.getWidth() - PLAYER_IMAGE_WIDTH) / 2;
+        double playerImageY = player.getY() + player.getHeight() - PLAYER_IMAGE_HEIGHT;
+
+        // 原圖面向右邊；玩家面向左邊時將圖片水平翻轉。
+        if (player.isFacingRight()) {
+            g.drawImage(
+                    playerImage,
+                    PLAYER_IMAGE_CROP_X,
+                    PLAYER_IMAGE_CROP_Y,
+                    PLAYER_IMAGE_CROP_WIDTH,
+                    PLAYER_IMAGE_CROP_HEIGHT,
+                    playerImageX,
+                    playerImageY,
+                    PLAYER_IMAGE_WIDTH,
+                    PLAYER_IMAGE_HEIGHT);
+        } else {
+            g.translate(playerImageX + PLAYER_IMAGE_WIDTH, 0);
+            g.scale(-1, 1);
+            g.drawImage(
+                    playerImage,
+                    PLAYER_IMAGE_CROP_X,
+                    PLAYER_IMAGE_CROP_Y,
+                    PLAYER_IMAGE_CROP_WIDTH,
+                    PLAYER_IMAGE_CROP_HEIGHT,
+                    0,
+                    playerImageY,
+                    PLAYER_IMAGE_WIDTH,
+                    PLAYER_IMAGE_HEIGHT);
+        }
+        // 恢復透明度和座標方向，避免影響後面繪製的內容。
+        g.restore();
     }
 
     private void drawEyes(GraphicsContext g, double x, double y, double width) {

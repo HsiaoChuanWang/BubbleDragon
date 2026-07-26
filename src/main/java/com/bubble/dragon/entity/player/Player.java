@@ -5,7 +5,7 @@ import com.bubble.dragon.entity.GameObject;
 // 不負責移動玩家，只保存玩家目前的狀態
 public final class Player extends GameObject {
     private static final int INITIAL_HP = 3;
-    private static final double WIDTH = 42;
+    private static final double WIDTH = 68;
     private static final double HEIGHT = 52;
     private static final double INVULNERABILITY_DURATION_SECONDS = 1.2; // 無敵時間
 
