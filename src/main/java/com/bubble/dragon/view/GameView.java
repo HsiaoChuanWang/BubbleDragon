@@ -4,7 +4,7 @@ import com.bubble.dragon.BubbleDragonApp;
 import com.bubble.dragon.controller.GameController;
 import com.bubble.dragon.game.GameLoop;
 import com.bubble.dragon.ui.GameCanvas;
-import com.bubble.dragon.ui.InfoPanel;
+import com.bubble.dragon.ui.HUD;
 import com.bubble.dragon.util.Constants;
 
 import javafx.scene.Scene;
@@ -21,7 +21,7 @@ public final class GameView {
     private final GameCanvas canvas = new GameCanvas();
 
     // 負責顯示玩家 HP、剩餘敵人數量及按鍵操作提示
-    private final InfoPanel info = new InfoPanel();
+    private final HUD info = new HUD();
 
     // 遊戲的主迴圈
     // 內部使用 JavaFX AnimationTimer，不斷呼叫 frame()
@@ -37,7 +37,7 @@ public final class GameView {
 
     public Scene createScene() {
         BorderPane root = new BorderPane(canvas, info, null, null, null); root.getStyleClass().add("game-screen");
-        Scene scene = new Scene(root, Constants.WIDTH, Constants.HEIGHT);
+        Scene scene = new Scene(root, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
         
         // Controller 保存按鍵集合，因此長按方向鍵時可在每一幀持續移動。
         // 按下按鍵 時執行 setOnKeyPressed

@@ -187,7 +187,7 @@ public final class GameController {
             // step02. 決定泡泡是否需要消失
             if (bubble.getAge() > Constants.BUBBLE_LIFETIME
                     || bubble.getX() < -Constants.BUBBLE_HORIZONTAL_MARGIN
-                    || bubble.getX() > Constants.WIDTH + Constants.BUBBLE_HORIZONTAL_MARGIN
+                    || bubble.getX() > Constants.WINDOW_WIDTH + Constants.BUBBLE_HORIZONTAL_MARGIN
                     || bubble.getY() < -Constants.BUBBLE_TOP_MARGIN) {
                 if (bubble.hasTrappedEnemy() && bubble.getTrappedEnemy().getState() == EnemyState.TRAPPED)
                      bubble.getTrappedEnemy().escape();
@@ -213,10 +213,10 @@ public final class GameController {
                 double knockbackX = player.getX()
                         + knockbackDirection
                         * Constants.PLAYER_HIT_KNOCKBACK_DISTANCE;
-                double minX = Constants.PLAYER_MIN_X_AFTER_HIT;
-                double maxX = Constants.WIDTH
+                double minX = Constants.PLAYER_HIT_SCREEN_MARGIN;
+                double maxX = Constants.WINDOW_WIDTH
                         - player.getWidth()
-                        - Constants.PLAYER_MIN_X_AFTER_HIT;
+                        - Constants.PLAYER_HIT_SCREEN_MARGIN;
                 player.setX(Math.max(minX, Math.min(maxX, knockbackX)));
             }
         }
@@ -278,7 +278,7 @@ public final class GameController {
 
         // step03. 算出 object 可容許的 x 區間，計算出修正後的 x 座標
         double minX = 0;
-        double maxX = Constants.WIDTH - object.getWidth();
+        double maxX = Constants.WINDOW_WIDTH - object.getWidth();
         double limitedX = Math.max(
                 minX,
                 Math.min(maxX, object.getX())
@@ -311,7 +311,7 @@ public final class GameController {
         }
 
         // step08. 如果物件穿過天花板，重置 y 座標並把速度歸零
-        if (object.getY() > Constants.HEIGHT) {
+        if (object.getY() > Constants.WINDOW_HEIGHT) {
             object.setY(Constants.RESPAWN_Y_POSITION);
             object.setVelocityY(0);
 

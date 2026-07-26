@@ -27,6 +27,6 @@ public final class GameOverView {
         Button home = new Button("返回首頁"); home.getStyleClass().add("secondary-button"); home.setOnAction(e -> app.showHome());
         HBox buttons = new HBox(16, retry, home); buttons.setAlignment(Pos.CENTER);
         VBox root = new VBox(22, icon, title, message, buttons); root.setAlignment(Pos.CENTER); root.getStyleClass().addAll("screen", "result-screen");
-        return new Scene(root, Constants.WIDTH, Constants.HEIGHT);
+        return new Scene(root, Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT);
     }
 }

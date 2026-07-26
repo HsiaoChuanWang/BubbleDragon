@@ -16,7 +16,7 @@ import javafx.scene.text.Font;
 public final class GameCanvas extends Canvas {
     // 畫布大小
     public GameCanvas() { 
-        super(Constants.WIDTH, Constants.HEIGHT - Constants.HUD_HEIGHT);
+        super(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT - Constants.HUD_HEIGHT);
      }
 
     public void render(GameController game) {
