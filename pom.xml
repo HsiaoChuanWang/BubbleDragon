@@ -8,6 +8,7 @@
     <version>1.0.0</version>
     <name>Bubble Dragon</name>
 
+    <!-- 集中管理版本，日後升級套件時只需修改此區。 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
@@ -17,21 +18,27 @@
     </properties>
 
     <dependencies>
+        <!-- JavaFX 的視窗、控制項、Canvas 與 AnimationTimer。 -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
             <version>${javafx.version}</version>
         </dependency>
+
+        <!-- 讀取 resources/maps 下的 JSON 關卡。 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
+        <!-- 僅在測試階段使用，不會包進正式遊戲。 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -42,18 +49,23 @@
 
     <build>
         <plugins>
+            <!-- 強制使用 Java 21 語法與 API 編譯。 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.13.0</version>
                 <configuration><release>21</release></configuration>
             </plugin>
+
+            <!-- 執行 src/test/java 內的 JUnit 5 測試。 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.3</version>
                 <configuration><useModulePath>false</useModulePath></configuration>
             </plugin>
+            
+            <!-- 提供 mvn javafx:run，並指定模組與主類別。 -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>

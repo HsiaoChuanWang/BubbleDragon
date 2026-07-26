@@ -1,12 +1,12 @@
 package com.bubble.dragon.util;
 
+// 目前僅用於敵人被泡泡困住後的三秒倒數
 public final class CountdownTimer {
     private final double duration;
     private double remaining;
     private boolean running;
 
     public CountdownTimer(double durationSeconds) {
-        if (durationSeconds < 0) throw new IllegalArgumentException("duration must be non-negative");
         duration = durationSeconds;
         remaining = durationSeconds;
     }

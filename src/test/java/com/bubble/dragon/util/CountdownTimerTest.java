@@ -3,6 +3,7 @@ package com.bubble.dragon.util;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
+/** 驗證倒數完成、重設以及不合法負數時長。 */
 class CountdownTimerTest {
     @Test void finishesAfterDuration() {
         CountdownTimer timer = new CountdownTimer(3); timer.start(); timer.update(2); assertFalse(timer.isFinished());

@@ -2,6 +2,7 @@ package com.bubble.dragon.view;
 
 import com.bubble.dragon.BubbleDragonApp;
 import com.bubble.dragon.util.Constants;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,7 +13,11 @@ import javafx.scene.layout.VBox;
 public final class GameOverView {
     private final BubbleDragonApp app;
     private final boolean victory;
-    public GameOverView(BubbleDragonApp app, boolean victory) { this.app = app; this.victory = victory; }
+
+    public GameOverView(BubbleDragonApp app, boolean victory) { 
+        this.app = app; 
+        this.victory = victory;
+    }
 
     public Scene createScene() {
         Label icon = new Label(victory ? "★" : "×"); icon.getStyleClass().add(victory ? "victory-icon" : "defeat-icon");

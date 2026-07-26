@@ -2,6 +2,7 @@ package com.bubble.dragon.view;
 
 import com.bubble.dragon.BubbleDragonApp;
 import com.bubble.dragon.util.Constants;
+
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -10,6 +11,7 @@ import javafx.scene.layout.VBox;
 
 public final class HomeView {
     private final BubbleDragonApp app;
+
     public HomeView(BubbleDragonApp app) { this.app = app; }
 
     public Scene createScene() {

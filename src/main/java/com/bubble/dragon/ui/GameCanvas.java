@@ -7,21 +7,32 @@ import com.bubble.dragon.entity.player.Player;
 import com.bubble.dragon.entity.weapon.Bubble;
 import com.bubble.dragon.map.Tile;
 import com.bubble.dragon.util.Constants;
+
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 public final class GameCanvas extends Canvas {
-    public GameCanvas() { super(Constants.WIDTH, Constants.HEIGHT - Constants.HUD_HEIGHT); }
+    // 畫布大小
+    public GameCanvas() { 
+        super(Constants.WIDTH, Constants.HEIGHT - Constants.HUD_HEIGHT);
+     }
 
     public void render(GameController game) {
+        // 取得 Canvas 的繪圖工具（GraphicsContext） 
         GraphicsContext g = getGraphicsContext2D();
-        double w = getWidth(), h = getHeight();
-        g.setFill(Color.web("#102447")); g.fillRect(0, 0, w, h);
+
+        double w = getWidth();  
+        double h = getHeight();
+
+        // 畫面重置，覆蓋上一幀的畫面，避免角色移動產生殘影 (Ghosting)
+        g.setFill(Color.web("#102447")); 
+        g.fillRect(0, 0, w, h);
         g.setFill(Color.web("#17365f"));
         for (int i = 0; i < 18; i++) g.fillOval(i * 67 % (int) w, 40 + i * 83 % (int) h, 4, 4);
 
+        // 繪製順序：背景 → 地圖 → 泡泡 → 敵人 → 玩家 → 出口。
         for (Tile tile : game.getTiles()) {
             g.setFill(Color.web("#3c7a57"));
             g.fillRoundRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getHeight(), 10, 10);
@@ -46,7 +57,15 @@ public final class GameCanvas extends Canvas {
         drawEyes(g, p.getX(), p.getY(), p.getWidth()); g.setGlobalAlpha(1);
 
         if (game.isDoorVisible()) {
-            g.setFill(Color.web("#ffd166")); g.fillRoundRect(game.getDoorX(), game.getDoorY(), 48, 70, 16, 16);
+            g.setFill(Color.web("#ffd166"));
+            g.fillRoundRect(
+                    game.getDoorX(),
+                    game.getDoorY(),
+                    Constants.DOOR_WIDTH,
+                    Constants.DOOR_HEIGHT,
+                    16,
+                    16
+            );
             g.setFill(Color.web("#604b2d")); g.fillOval(game.getDoorX() + 35, game.getDoorY() + 36, 6, 6);
             g.setFill(Color.WHITE); g.setFont(Font.font(18)); g.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
         }
