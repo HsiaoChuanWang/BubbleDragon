@@ -182,8 +182,13 @@ public final class GameController {
                 e.setY(centeredEnemyY);
             } else {
                 // 普通泡泡水平前進，遇到第一名 MOVING 敵人便將其捕捉
-                bubble.setX(bubble.getX() + bubble.getVelocityX() * dt);
-                bubble.setY(bubble.getY() - Constants.BUBBLE_RISE_SPEED * dt);
+                // 射程時間內只做水平移動；射程結束後改成垂直上飄。
+                if (bubble.getAge() <= Constants.BUBBLE_HORIZONTAL_TRAVEL_SECONDS) {
+                    bubble.setX(bubble.getX() + bubble.getVelocityX() * dt);
+                } else {
+                    bubble.setVelocityX(0);
+                    bubble.setY(bubble.getY() - Constants.BUBBLE_RISE_SPEED * dt);
+                }
                 for (Enemy e : enemies)
                     if (e.getState() == EnemyState.MOVING && OverlapChecker.overlaps(bubble, e)) {
                         e.trap();
@@ -193,10 +198,31 @@ public final class GameController {
             }
 
             // step02. 決定泡泡是否需要消失
-            if (bubble.getAge() > Constants.BUBBLE_LIFETIME
-                    || bubble.getX() < -Constants.BUBBLE_HORIZONTAL_MARGIN
-                    || bubble.getX() > Constants.WINDOW_WIDTH + Constants.BUBBLE_HORIZONTAL_MARGIN
-                    || bubble.getY() < -Constants.BUBBLE_TOP_MARGIN) {
+            // 以泡泡右緣計算邊界，確保整顆泡泡留在視窗內；碰到左右邊界時反彈。
+            double maxBubbleX = Constants.WINDOW_WIDTH - bubble.getWidth();
+            if (bubble.getX() < 0) {
+                bubble.setX(0);
+                bubble.setVelocityX(Math.abs(bubble.getVelocityX()));
+            } else if (bubble.getX() > maxBubbleX) {
+                bubble.setX(maxBubbleX);
+                bubble.setVelocityX(-Math.abs(bubble.getVelocityX()));
+            }
+
+            // 到達畫面頂端後停止上升，並停留到存活時間結束。
+            if (bubble.getY() < 0) {
+                bubble.setY(0);
+                bubble.setVelocityY(0);
+            }
+
+            // 邊界修正後重新置中敵人，避免敵人與泡泡的位置不同步。
+            if (bubble.hasTrappedEnemy()) {
+                Enemy trappedEnemy = bubble.getTrappedEnemy();
+                trappedEnemy.setX(bubble.getX() + (bubble.getWidth() - trappedEnemy.getWidth()) / 2);
+                trappedEnemy.setY(bubble.getY() + (bubble.getHeight() - trappedEnemy.getHeight()) / 2);
+            }
+
+            // 泡泡超過最長存活時間後消失，受困的敵人則恢復行動。
+            if (bubble.getAge() > Constants.BUBBLE_LIFETIME) {
                 if (bubble.hasTrappedEnemy() && bubble.getTrappedEnemy().getState() == EnemyState.TRAPPED)
                     bubble.getTrappedEnemy().escape();
                 bubble.deactivate();

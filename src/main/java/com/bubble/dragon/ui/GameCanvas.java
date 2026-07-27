@@ -75,20 +75,22 @@ public final class GameCanvas extends Canvas {
             g.strokeRoundRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getHeight(), 10, 10);
         }
 
-        for (Bubble bubble : game.getBubbles()) {
-            g.setFill(bubble.hasTrappedEnemy() ? Color.web("#a86df2", .42) : Color.web("#7de7ff", .30));
-            g.fillOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
-            g.setStroke(Color.web("#d8fbff"));
-            g.setLineWidth(2);
-            g.strokeOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
-        }
-
+        // 先畫敵人，再覆蓋半透明泡泡，讓受困敵人仍能從泡泡內隱約看見。
         for (Enemy enemy : game.getEnemies()) {
-            if (enemy.getState() == EnemyState.DEFEATED || enemy.getState() == EnemyState.TRAPPED)
+            if (enemy.getState() == EnemyState.DEFEATED)
                 continue;
             g.setFill(Color.web("#ff6b6b"));
             g.fillRoundRect(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight(), 14, 14);
             drawEyes(g, enemy.getX(), enemy.getY(), enemy.getWidth());
+        }
+
+        // 使用半透明黃色填色與亮色外框，保留泡泡內部的可見度。
+        for (Bubble bubble : game.getBubbles()) {
+            g.setFill(Color.web("#ffd54f", .38));
+            g.fillOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
+            g.setStroke(Color.web("#fff3a3", .85));
+            g.setLineWidth(2);
+            g.strokeOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
         }
 
         Player p = game.getPlayer();

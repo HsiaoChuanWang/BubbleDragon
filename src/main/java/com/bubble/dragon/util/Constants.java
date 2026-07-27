@@ -29,15 +29,15 @@ public final class Constants {
 
     // 敵人移動與受困時間
     public static final double ENEMY_SPEED = 90;
-    public static final double TRAP_SECONDS = 3;
+    public static final double TRAP_SECONDS = 20;
 
     // 泡泡移動、存在時間與活動範圍
     public static final double BUBBLE_SPEED = 390;
+    public static final double BUBBLE_HORIZONTAL_TRAVEL_SECONDS = 1; // 普通泡泡水平飛行的秒數
     public static final double BUBBLE_RISE_SPEED = 12; // 普通泡泡飛行時的上升速度
-    public static final double BUBBLE_LIFETIME = 5; // 泡泡最多存在的秒數
-    public static final double BUBBLE_HORIZONTAL_MARGIN = 40; // 泡泡超出畫面左右多少距離後消失
-    public static final double BUBBLE_TOP_MARGIN = 50; // 泡泡超出畫面上方多少距離後消失
-    public static final double BUBBLE_SIZE = 30;
+    public static final double TRAPPED_BUBBLE_VERTICAL_SPEED = -45; // 捕捉敵人後向上飄的速度
+    public static final double BUBBLE_LIFETIME = 20; // 泡泡最多存在的秒數
+    public static final double BUBBLE_SIZE = 56; // 大於 40x40 的敵人，讓泡泡能完整包覆敵人
     public static final double SHOOT_COOLDOWN_SECONDS = 0.32; // 兩次發射泡泡之間需等待的秒數
 
     private Constants() {
