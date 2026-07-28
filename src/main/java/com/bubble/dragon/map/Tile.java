@@ -1,17 +1,35 @@
 package com.bubble.dragon.map;
 
+import java.util.List;
+
 import com.bubble.dragon.entity.GameObject;
 
-// 關卡中的矩形地磚；solid 為 true 時會阻擋角色移動
+// 關卡中的矩形地磚
+// solid 為 true 時會阻擋角色移動
 public final class Tile extends GameObject {
-    private final boolean solid;
+    public static final double COLLISION_HEIGHT = 24;
 
-    public Tile(double x, double y, double width, double height, boolean solid) {
-        super(x, y, width, height);
+    private final boolean solid;
+    private final List<String> texturePattern;
+
+    public Tile(
+            double x,
+            double y,
+            double width,
+            boolean solid,
+            List<String> texturePattern) {
+
+        // 磚塊圖片可向下完整延伸，物理碰撞永遠只使用最上方 24px
+        super(x, y, width, COLLISION_HEIGHT);
         this.solid = solid;
+        this.texturePattern = List.copyOf(texturePattern);
     }
 
     public boolean isSolid() {
         return solid;
+    }
+
+    public List<String> getTexturePattern() {
+        return texturePattern;
     }
 }
