@@ -1,12 +1,7 @@
 package com.bubble.dragon.ui;
 
 import com.bubble.dragon.controller.GameController;
-import com.bubble.dragon.entity.enemy.Enemy;
-import com.bubble.dragon.entity.enemy.EnemyState;
-import com.bubble.dragon.entity.player.Player;
-import com.bubble.dragon.entity.player.PlayerState;
 import com.bubble.dragon.entity.weapon.Bubble;
-import com.bubble.dragon.map.Tile;
 import com.bubble.dragon.util.Constants;
 
 import javafx.scene.canvas.Canvas;
@@ -15,169 +10,140 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
+// 控制遊戲畫面的繪製順序，簡單元素直接繪製，複雜實體交給專用 Renderer
 public final class GameCanvas extends Canvas {
-    private static final Image PLAYER_STANDING_IMAGE = new Image(
-            GameCanvas.class.getResource("/images/stand.png").toExternalForm());
-    private static final Image PLAYER_LEFT_LEG_IMAGE = new Image(
-            GameCanvas.class.getResource("/images/left_leg.png").toExternalForm());
-    private static final Image PLAYER_RIGHT_LEG_IMAGE = new Image(
-            GameCanvas.class.getResource("/images/right_leg.png").toExternalForm());
-    private static final Image PLAYER_BLOW_IMAGE = new Image(
-            GameCanvas.class.getResource("/images/blow.png").toExternalForm());
-    private static final Image[] PLAYER_WALK_IMAGES = {
-            PLAYER_LEFT_LEG_IMAGE,
-            PLAYER_STANDING_IMAGE,
-            PLAYER_RIGHT_LEG_IMAGE,
-            PLAYER_STANDING_IMAGE
-    };
-    private static final long WALK_FRAME_NANOS = 60_000_000;
+    // 背景圖片的上半部是第二關，下半部是第一關；轉場時會在兩者之間移動裁切位置
+    private static final Image BACKGROUND_IMAGE = ImageLoader.load("/images/background.png");
 
-    // 從原圖的哪個位置開始裁切，以及要保留的範圍。
-    private static final double PLAYER_IMAGE_CROP_X = 347;
-    private static final double PLAYER_IMAGE_CROP_Y = 0;
-    private static final double PLAYER_IMAGE_CROP_WIDTH = 741;
-    private static final double PLAYER_IMAGE_CROP_HEIGHT = 872;
+    // 玩家、敵人與地磚的繪製細節分別交給專用 Renderer 處理
+    private final PlayerRenderer playerRenderer = new PlayerRenderer();
+    private final EnemyRenderer enemyRenderer = new EnemyRenderer();
+    private final TileRenderer tileRenderer = new TileRenderer();
 
-    // 遊戲中的顯示寬度；高度會依裁切範圍等比例計算。
-    private static final double PLAYER_IMAGE_WIDTH = 100;
-    private static final double PLAYER_IMAGE_HEIGHT = PLAYER_IMAGE_WIDTH
-            * PLAYER_IMAGE_CROP_HEIGHT
-            / PLAYER_IMAGE_CROP_WIDTH;
-    private static final double PLAYER_INVULNERABLE_OPACITY = 0.48;
-
-    private long walkAnimationStart;
-    private boolean wasWalking;
-
-    // 畫布大小
+    // 建立遊戲畫布；畫布高度扣除 HUD，避免遊戲畫面與下方資訊列重疊
     public GameCanvas() {
         super(Constants.WINDOW_WIDTH, Constants.WINDOW_HEIGHT - Constants.HUD_HEIGHT);
     }
 
+    /*
+     * 依照 GameController 提供的最新遊戲狀態，重新繪製整個遊戲畫面
+     * 繪製順序：背景 → 第一、二關地磚 → 敵人 → 泡泡 → 玩家 → 出口
+     * 後畫的內容會蓋在先畫的內容上，因此半透明泡泡會顯示在敵人前方
+     */
     public void render(GameController game) {
-        // 取得 Canvas 的繪圖工具（GraphicsContext）
-        GraphicsContext g = getGraphicsContext2D();
+        // 取得 Canvas 的 2D 繪圖工具。
+        GraphicsContext graphics = getGraphicsContext2D();
 
-        double w = getWidth();
-        double h = getHeight();
+        // 取得目前畫布的實際寬度與高度，供背景縮放和關卡轉場使用
+        double width = getWidth();
+        double height = getHeight();
 
-        // 畫面重置，覆蓋上一幀的畫面，避免角色移動產生殘影 (Ghosting)
-        g.setFill(Color.web("#102447"));
-        g.fillRect(0, 0, w, h);
-        g.setFill(Color.web("#17365f"));
-        for (int i = 0; i < 18; i++)
-            g.fillOval(i * 67 % (int) w, 40 + i * 83 % (int) h, 4, 4);
+        // 背景會覆蓋整張畫布，也會清除上一幀的內容，避免移動物件留下殘影
+        drawBackground(graphics, game.getLevelTransitionProgress(), width, height);
 
-        // 繪製順序：背景 → 地圖 → 泡泡 → 敵人 → 玩家 → 出口。
-        for (Tile tile : game.getTiles()) {
-            g.setFill(Color.web("#3c7a57"));
-            g.fillRoundRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getHeight(), 10, 10);
-            g.setStroke(Color.web("#79c267"));
-            g.strokeRoundRect(tile.getX(), tile.getY(), tile.getWidth(), tile.getHeight(), 10, 10);
-        }
+        // 將 0 ~ 1 的轉場進度換算成地圖需要垂直移動的像素距離
+        double transitionOffset = game.getLevelTransitionProgress() * height;
 
-        // 先畫敵人，再覆蓋半透明泡泡，讓受困敵人仍能從泡泡內隱約看見。
-        for (Enemy enemy : game.getEnemies()) {
-            if (enemy.getState() == EnemyState.DEFEATED)
-                continue;
-            g.setFill(Color.web("#ff6b6b"));
-            g.fillRoundRect(enemy.getX(), enemy.getY(), enemy.getWidth(), enemy.getHeight(), 14, 14);
-            drawEyes(g, enemy.getX(), enemy.getY(), enemy.getWidth());
-        }
+        // 第一關從原位往上移出畫面
+        tileRenderer.draw(graphics, game.getLevelOneTiles(), -transitionOffset);
 
-        // 使用半透明黃色填色與亮色外框，保留泡泡內部的可見度。
+        // 第二關一開始位於畫面下方，隨轉場進度往上移入畫面
+        tileRenderer.draw(graphics, game.getLevelTwoTiles(), height - transitionOffset);
+
+        // 先畫敵人，再畫半透明泡泡，讓受困敵人仍能從泡泡內看見
+        enemyRenderer.drawAll(graphics, game.getEnemies());
+        drawBubbles(graphics, game);
+
+        // 玩家繪製在敵人和泡泡之上；isShooting() 用來選擇吹泡泡圖片
+        playerRenderer.draw(graphics, game.getPlayer(), game.isShooting());
+
+        // 出口最後繪製；尚未符合顯示條件時，drawDoor() 不會畫任何內容。
+        drawDoor(graphics, game);
+    }
+
+    /*
+     * 繪製目前關卡的背景
+     * background.png 垂直放置了兩張等高的關卡背景：圖片上半部是第二關，下半部是第一關
+     * transitionProgress 從 0 增加到 1 時，裁切位置會由下半部移到上半部
+     */
+    private void drawBackground(
+            GraphicsContext graphics,
+            double transitionProgress,
+            double width,
+            double height) {
+        // 一個關卡背景的原圖高度是整張背景圖片的一半
+        double stageHeight = BACKGROUND_IMAGE.getHeight() / 2;
+
+        // 進度為 0 時從下半部開始裁切；進度為 1 時從上半部開始裁切
+        double sourceY = stageHeight * (1 - transitionProgress);
+
+        // 裁切一個關卡高度的背景，再縮放到整個遊戲畫布
+        graphics.drawImage(
+                // 背景原圖
+                BACKGROUND_IMAGE,
+
+                // 原圖裁切區域的起始 X
+                0,
+
+                // 原圖裁切區域的起始 Y，會依轉場進度向上移動
+                sourceY,
+
+                // 使用完整的原圖寬度
+                BACKGROUND_IMAGE.getWidth(),
+
+                // 每次裁切一個關卡背景的高度
+                stageHeight,
+
+                // 從畫布左上角 X = 0 開始繪製
+                0,
+
+                // 從畫布左上角 Y = 0 開始繪製
+                0,
+
+                // 將背景縮放成畫布寬度
+                width,
+
+                // 將背景縮放成畫布高度
+                height);
+    }
+
+    // 逐一繪製目前泡泡清單中的物件；泡泡使用半透明填色，避免完全遮住內部的敵人
+    private void drawBubbles(GraphicsContext graphics, GameController game) {
         for (Bubble bubble : game.getBubbles()) {
-            g.setFill(Color.web("#ffd54f", .38));
-            g.fillOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
-            g.setStroke(Color.web("#fff3a3", .85));
-            g.setLineWidth(2);
-            g.strokeOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
-        }
+            // 設定半透明黃色並填滿泡泡內部
+            graphics.setFill(Color.web("#ffd54f", .38));
+            graphics.fillOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
 
-        Player p = game.getPlayer();
-        drawPlayer(g, p, game.isShooting());
-
-        if (game.isDoorVisible()) {
-            g.setFill(Color.web("#ffd166"));
-            g.fillRoundRect(
-                    game.getDoorX(),
-                    game.getDoorY(),
-                    Constants.DOOR_WIDTH,
-                    Constants.DOOR_HEIGHT,
-                    16,
-                    16);
-            g.setFill(Color.web("#604b2d"));
-            g.fillOval(game.getDoorX() + 35, game.getDoorY() + 36, 6, 6);
-            g.setFill(Color.WHITE);
-            g.setFont(Font.font(18));
-            g.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
+            // 設定較亮的半透明外框與 2px 線寬，再畫出泡泡輪廓
+            graphics.setStroke(Color.web("#fff3a3", .85));
+            graphics.setLineWidth(2);
+            graphics.strokeOval(bubble.getX(), bubble.getY(), bubble.getWidth(), bubble.getHeight());
         }
     }
 
-    private void drawPlayer(GraphicsContext g, Player player, boolean shooting) {
-        // 玩家剛開始走路時記錄目前時間，讓走路動畫從第一張圖開始播放。
-        boolean walking = player.getState() == PlayerState.MOVING;
-        long now = System.nanoTime();
-        if (walking && !wasWalking)
-            walkAnimationStart = now;
-        wasWalking = walking;
+    // 所有敵人消滅且關卡轉場完成後，在指定位置繪製出口
+    private void drawDoor(GraphicsContext graphics, GameController game) {
+        // 出口尚未開啟時直接結束，不進行後續繪製。
+        if (!game.isDoorVisible())
+            return;
 
-        Image playerImage = shooting ? PLAYER_BLOW_IMAGE : PLAYER_STANDING_IMAGE;
-        if (walking && !shooting) {
-            int frameIndex = (int) ((now - walkAnimationStart) / WALK_FRAME_NANOS
-                    % PLAYER_WALK_IMAGES.length);
-            playerImage = PLAYER_WALK_IMAGES[frameIndex];
-        }
+        // 繪製黃色圓角矩形作為門的主體
+        graphics.setFill(Color.web("#ffd166"));
+        graphics.fillRoundRect(
+                game.getDoorX(),
+                game.getDoorY(),
+                Constants.DOOR_WIDTH,
+                Constants.DOOR_HEIGHT,
+                16,
+                16);
 
-        // 保存目前的透明度與座標方向。
-        // 畫玩家時會修改透明度，面向左邊時還會翻轉座標；
-        // 畫完後可用 restore() 恢復，避免影響後面的出口等圖案。
-        g.save();
+        // 在門的右側繪製深色圓形門把
+        graphics.setFill(Color.web("#604b2d"));
+        graphics.fillOval(game.getDoorX() + 35, game.getDoorY() + 36, 6, 6);
 
-        // 玩家在無敵時間內顯示為 48% 不透明，其他時候保持完全不透明。
-        g.setGlobalAlpha(player.isInvulnerable() ? PLAYER_INVULNERABLE_OPACITY : 1);
-
-        // 玩家位置與寬高形成一個隱形矩形，遊戲用它判斷地面、牆壁和敵人碰撞。
-        // 角色圖片可能比這個矩形大，因此將圖片水平置中，並讓圖片底部對齊矩形底部，
-        // 使圖片中的腳和遊戲判定的站立位置一致。
-        double playerImageX = player.getX() + (player.getWidth() - PLAYER_IMAGE_WIDTH) / 2;
-        double playerImageY = player.getY() + player.getHeight() - PLAYER_IMAGE_HEIGHT;
-
-        // 原圖面向右邊；玩家面向左邊時將圖片水平翻轉。
-        if (player.isFacingRight()) {
-            g.drawImage(
-                    playerImage,
-                    PLAYER_IMAGE_CROP_X,
-                    PLAYER_IMAGE_CROP_Y,
-                    PLAYER_IMAGE_CROP_WIDTH,
-                    PLAYER_IMAGE_CROP_HEIGHT,
-                    playerImageX,
-                    playerImageY,
-                    PLAYER_IMAGE_WIDTH,
-                    PLAYER_IMAGE_HEIGHT);
-        } else {
-            g.translate(playerImageX + PLAYER_IMAGE_WIDTH, 0);
-            g.scale(-1, 1);
-            g.drawImage(
-                    playerImage,
-                    PLAYER_IMAGE_CROP_X,
-                    PLAYER_IMAGE_CROP_Y,
-                    PLAYER_IMAGE_CROP_WIDTH,
-                    PLAYER_IMAGE_CROP_HEIGHT,
-                    0,
-                    playerImageY,
-                    PLAYER_IMAGE_WIDTH,
-                    PLAYER_IMAGE_HEIGHT);
-        }
-        // 恢復透明度和座標方向，避免影響後面繪製的內容。
-        g.restore();
-    }
-
-    private void drawEyes(GraphicsContext g, double x, double y, double width) {
-        g.setFill(Color.WHITE);
-        g.fillOval(x + 9, y + 10, 8, 11);
-        g.fillOval(x + width - 17, y + 10, 8, 11);
-        g.setFill(Color.web("#17223b"));
-        g.fillOval(x + 12, y + 14, 4, 5);
-        g.fillOval(x + width - 14, y + 14, 4, 5);
+        // 在門的上方顯示「出口」文字
+        graphics.setFill(Color.WHITE);
+        graphics.setFont(Font.font(18));
+        graphics.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
     }
 }
