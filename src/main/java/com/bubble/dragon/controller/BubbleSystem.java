@@ -44,6 +44,7 @@ public final class BubbleSystem {
             else
                 moveFreeBubble(bubble, dt);
             keepInsideScreen(bubble); // 若泡泡碰到螢幕邊界，反彈或停止上升
+            trapEnemyWhileHorizontal(bubble); // 只有仍在水平飛行的泡泡可以捕捉敵人
             updateTrappedEnemyPosition(bubble); // 若泡泡困住敵人，更新敵人位置，使其保持在泡泡中央
             expireFreeBubble(bubble); // 普通泡泡超過壽命後失效；困敵泡泡改以敵人受困時間計算
         }
@@ -56,7 +57,7 @@ public final class BubbleSystem {
         centerEnemy(bubble, bubble.getTrappedEnemy());
     }
 
-    // 普通泡泡先水平移動，若超過水平移動時間則改為垂直上升，並檢查是否困住敵人
+    // 普通泡泡先水平移動，超過水平移動時間後改為垂直上升
     private void moveFreeBubble(Bubble bubble, double dt) {
         if (bubble.getMovementState() == BubbleMovementState.HORIZONTAL
                 && bubble.getAge() > Constants.BUBBLE_HORIZONTAL_TRAVEL_SECONDS)
@@ -67,6 +68,13 @@ public final class BubbleSystem {
         } else if (bubble.getMovementState() == BubbleMovementState.RISING) {
             bubble.setY(bubble.getY() + bubble.getVelocityY() * dt);
         }
+    }
+
+    // 泡泡開始上升或停在畫面頂端後，不再對敵人進行捕捉判定
+    private void trapEnemyWhileHorizontal(Bubble bubble) {
+        if (bubble.hasTrappedEnemy()
+                || bubble.getMovementState() != BubbleMovementState.HORIZONTAL)
+            return;
 
         for (Enemy enemy : enemies) {
             if (enemy.canBeTrapped() && OverlapChecker.overlaps(bubble, enemy)) {
