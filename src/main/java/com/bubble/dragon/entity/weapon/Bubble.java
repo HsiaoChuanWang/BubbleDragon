@@ -9,6 +9,7 @@ public final class Bubble extends GameObject {
     private Enemy trappedEnemy; // null 表示這顆泡泡目前沒有困住敵人
     private double age; // 這顆泡泡存在了多久
     private boolean active = true; // 泡泡是否還在
+    private BubbleMovementState movementState = BubbleMovementState.HORIZONTAL;
 
     public Bubble(double x, double y, double velocityX) {
         super(x, y, Constants.BUBBLE_SIZE, Constants.BUBBLE_SIZE);
@@ -39,8 +40,25 @@ public final class Bubble extends GameObject {
         return trappedEnemy != null;
     }
 
+    public BubbleMovementState getMovementState() {
+        return movementState;
+    }
+
+    public void startRising() {
+        movementState = BubbleMovementState.RISING;
+        velocityX = 0;
+        velocityY = -Constants.BUBBLE_RISE_SPEED;
+    }
+
+    public void stopAtTop() {
+        movementState = BubbleMovementState.STOPPED_AT_TOP;
+        velocityX = 0;
+        velocityY = 0;
+    }
+
     public void trap(Enemy enemy) {
         trappedEnemy = enemy;
+        movementState = BubbleMovementState.RISING;
         velocityX = 0;
         velocityY = Constants.TRAPPED_BUBBLE_VERTICAL_SPEED;
     }

@@ -19,6 +19,8 @@ public final class Constants {
     public static final double GRAVITY = 1_500; // 每秒向下增加的速度
     public static final double RESPAWN_Y_POSITION = 100; // 物件掉出畫面後回到的 Y 座標
     public static final double MAX_DELTA = 1.0 / 30.0; // 單幀最多計算的秒數，避免卡頓時移動過遠
+    public static final double LEVEL_TRANSITION_SECONDS = 5; // 第一關切換到第二關的背景捲動與玩家移動時間
+    public static final double LEVEL_TRANSITION_PLAYER_MARGIN = 24; // 轉場結束時，玩家與畫面右側保留的距離
 
     // 玩家移動與受傷反應
     public static final double PLAYER_SPEED = 260;
@@ -28,7 +30,15 @@ public final class Constants {
     public static final double PLAYER_HIT_SCREEN_MARGIN = 5; // 玩家受傷擊退後與畫面左右邊界保留的距離
 
     // 敵人移動與受困時間
-    public static final double ENEMY_SPEED = 90;
+    public static final double ENEMY_PATROL_SPEED = 67.5; // 尚未發現玩家時，在平台上巡邏的水平速度
+    public static final double ENEMY_CHASE_SPEED = 120; // 發現玩家後，朝目前方向追擊的水平速度
+    public static final double ENEMY_NOTICE_DISTANCE = 160; // 在敵人左右 160px 內時，才可能被敵人發現
+    public static final double ENEMY_FORGET_DISTANCE = 220; // 水平中心距離超過此值時，敵人停止追擊
+    public static final double ENEMY_NOTICE_HEIGHT = 48; // 在敵人上下 48px 內，敵人才會發現玩家
+    public static final double ENEMY_FORGET_HEIGHT = 72; // 垂直中心距離超過此值時，敵人停止追擊
+    public static final double ENEMY_JUMP_SECONDS = 1; // 敵人維持 JUMP 狀態後切換成 FLY 的秒數
+    public static final double ENEMY_FLY_SECONDS = 1; // 敵人維持 FLY 狀態後切換成 STOP 的秒數
+    public static final double ENEMY_STOP_SECONDS = 1; // 敵人維持 STOP 狀態後重新切換成 JUMP 的秒數
     public static final double TRAP_SECONDS = 20;
 
     // 泡泡移動、存在時間與活動範圍
@@ -36,7 +46,7 @@ public final class Constants {
     public static final double BUBBLE_HORIZONTAL_TRAVEL_SECONDS = 1; // 普通泡泡水平飛行的秒數
     public static final double BUBBLE_RISE_SPEED = 12; // 普通泡泡飛行時的上升速度
     public static final double TRAPPED_BUBBLE_VERTICAL_SPEED = -45; // 捕捉敵人後向上飄的速度
-    public static final double BUBBLE_LIFETIME = 20; // 泡泡最多存在的秒數
+    public static final double BUBBLE_LIFETIME = 20; // 未困住敵人的普通泡泡最多存在秒數
     public static final double BUBBLE_SIZE = 56; // 大於 40x40 的敵人，讓泡泡能完整包覆敵人
     public static final double SHOOT_COOLDOWN_SECONDS = 0.32; // 兩次發射泡泡之間需等待的秒數
 
