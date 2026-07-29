@@ -1,24 +1,76 @@
 {
     "playerX": 70,
     "playerY": 470,
-    "tileTextures": [
-        "/images/stone01.png"
-    ],
+    "tileTextures": ["/images/stone01.png"],
     "tiles": [
-        { "x": 0, "y": 550, "width": 960, "solid": true },
-        { "x": 40, "y": 420, "width": 192, "solid": true },
-        { "x": 300, "y": 485, "width": 192, "solid": true },
-        { "x": 570, "y": 410, "width": 144, "solid": true },
-        { "x": 780, "y": 330, "width": 192, "solid": true },
-        { "x": 500, "y": 270, "width": 192, "solid": true },
-        { "x": 230, "y": 320, "width": 168, "solid": true },
-        { "x": 20, "y": 210, "width": 168, "solid": true },
-        { "x": 710, "y": 155, "width": 168, "solid": true }
+        {
+            "x": 0,
+            "y": 570,
+            "width": 960,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 460,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 310,
+            "width": 216,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 110,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 360,
+            "y": 385,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 360,
+            "y": 200,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 720,
+            "y": 460,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 768,
+            "y": 310,
+            "width": 216,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 720,
+            "y": 110,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        }
     ],
     "enemies": [
-        { "x": 340, "y": 425, "direction": -1 },
-        { "x": 610, "y": 350, "direction": 1 },
-        { "x": 810, "y": 270, "direction": -1 },
-        { "x": 540, "y": 210, "direction": 1 }
+        { "x": 100, "y": 270, "direction": 1 },
+        { "x": 400, "y": 345, "direction": 1 },
+        { "x": 520, "y": 160, "direction": -1 },
+        { "x": 820, "y": 420, "direction": -1 }
     ]
 }
