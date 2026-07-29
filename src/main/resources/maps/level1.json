@@ -1,18 +1,96 @@
 {
     "playerX": 80,
     "playerY": 480,
+    "tileTextures": [
+        "/images/earth01.png",
+        "/images/earth02.png",
+        "/images/earth03.jpg",
+        "/images/earth04.jpg"
+    ],
     "tiles": [
-        { "x": 0, "y": 550, "width": 960, "height": 36, "solid": true },
-        { "x": 120, "y": 430, "width": 210, "height": 24, "solid": true },
-        { "x": 390, "y": 470, "width": 190, "height": 24, "solid": true },
-        { "x": 650, "y": 390, "width": 220, "height": 24, "solid": true },
-        { "x": 350, "y": 285, "width": 210, "height": 24, "solid": true },
-        { "x": 70, "y": 250, "width": 190, "height": 24, "solid": true },
-        { "x": 690, "y": 190, "width": 190, "height": 24, "solid": true }
+        {
+            "x": 0,
+            "y": 570,
+            "width": 960,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth01.png",
+                "/images/earth02.png",
+                "/images/earth03.jpg",
+                "/images/earth04.jpg"
+            ]
+        },
+        {
+            "x": 160,
+            "y": 460,
+            "width": 192,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth02.png",
+                "/images/earth04.jpg",
+                "/images/earth01.png"
+            ]
+        },
+        {
+            "x": 400,
+            "y": 360,
+            "width": 168,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth03.jpg",
+                "/images/earth01.png",
+                "/images/earth04.jpg"
+            ]
+        },
+        {
+            "x": 650,
+            "y": 470,
+            "width": 192,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth04.jpg",
+                "/images/earth02.png",
+                "/images/earth03.jpg",
+                "/images/earth01.png"
+            ]
+        },
+        {
+            "x": 70,
+            "y": 250,
+            "width": 192,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth04.jpg",
+                "/images/earth01.png",
+                "/images/earth02.png"
+            ]
+        },
+        {
+            "x": 350,
+            "y": 160,
+            "width": 216,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth01.png",
+                "/images/earth03.jpg",
+                "/images/earth02.png"
+            ]
+        },
+        {
+            "x": 700,
+            "y": 250,
+            "width": 216,
+            "solid": true,
+            "texturePattern": [
+                "/images/earth02.png",
+                "/images/earth03.jpg",
+                "/images/earth04.jpg"
+            ]
+        }
     ],
     "enemies": [
-        { "x": 440, "y": 420, "direction": 1 },
-        { "x": 710, "y": 330, "direction": -1 },
-        { "x": 145, "y": 190, "direction": 1 }
+        { "x": 440, "y": 320, "direction": 1 },
+        { "x": 760, "y": 210, "direction": -1 },
+        { "x": 130, "y": 210, "direction": 1 }
     ]
 }

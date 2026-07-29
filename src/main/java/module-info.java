@@ -35,6 +35,9 @@ module com.bubble.dragon {
     exports com.bubble.dragon.entity;
     exports com.bubble.dragon.entity.player;
     exports com.bubble.dragon.entity.enemy;
+
+    // Boss 實體獨立成 package，供控制器與繪圖層共同使用。
+    exports com.bubble.dragon.entity.boss;
     exports com.bubble.dragon.entity.weapon;
 
     // 地圖資料。

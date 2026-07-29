@@ -1,0 +1,76 @@
+{
+    "playerX": 70,
+    "playerY": 470,
+    "tileTextures": ["/images/stone01.png"],
+    "tiles": [
+        {
+            "x": 0,
+            "y": 570,
+            "width": 960,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 460,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 310,
+            "width": 216,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 0,
+            "y": 110,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 360,
+            "y": 385,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 360,
+            "y": 200,
+            "width": 264,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 720,
+            "y": 460,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 768,
+            "y": 310,
+            "width": 216,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        },
+        {
+            "x": 720,
+            "y": 110,
+            "width": 240,
+            "solid": true,
+            "texturePattern": ["/images/stone01.png"]
+        }
+    ],
+    "enemies": [
+        { "x": 100, "y": 270, "direction": 1 },
+        { "x": 400, "y": 345, "direction": 1 },
+        { "x": 520, "y": 160, "direction": -1 },
+        { "x": 820, "y": 420, "direction": -1 }
+    ]
+}
