@@ -84,10 +84,16 @@ public final class CollisionSystem {
         return hasSupportAtPoint(leftFoot, footY) && hasSupportAtPoint(rightFoot, footY);
     }
 
+    // 檢查指定的腳底點是否正站在任一實體平台上
     private boolean hasSupportAtPoint(double x, double footY) {
         for (Tile tile : tiles) {
-            boolean touchesTop = Math.abs(footY - tile.getY()) <= 3;
+            // 檢查腳底高度是否接近平台頂端；允許少量誤差以避免浮點數無法完全相等
+            boolean touchesTop = Math.abs(footY - tile.getY()) <= Constants.PLATFORM_SUPPORT_TOLERANCE;
+
+            // 檢查腳底點的 X 座標是否落在平台的左、右邊界之間
             boolean horizontallyOverlaps = x >= tile.getX() && x <= tile.getRight();
+
+            // 平台必須是實體、腳底高度碰到平台頂端，而且腳底點位於平台寬度內
             if (tile.isSolid() && touchesTop && horizontallyOverlaps)
                 return true;
         }

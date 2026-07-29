@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.bubble.dragon.entity.boss.Boss;
+import com.bubble.dragon.entity.boss.BossBubble;
 import com.bubble.dragon.entity.enemy.Enemy;
 import com.bubble.dragon.entity.enemy.EnemyState;
 import com.bubble.dragon.entity.player.Player;
@@ -33,7 +35,11 @@ public final class GameController {
     private final CollisionSystem collisions;
     private final BubbleSystem bubbles;
     private final EnemySystem enemies;
+    private final BossSystem boss;
     private final LevelTransition transition;
+
+    // Player 轉場後，要等幾秒開始 boss 的觸發
+    private double bossAppearanceDelay;
 
     private boolean jumpHeld; // 記錄上一幀是否按住跳躍，避免按住空白鍵時連續起跳
     private boolean finished; // 遊戲結束後不再更新，避免重複呼叫 resultHandler
@@ -47,6 +53,7 @@ public final class GameController {
         collisions = new CollisionSystem(levels.getActiveTiles());
         bubbles = new BubbleSystem(levels.getEnemies());
         enemies = new EnemySystem(levels.getEnemies(), collisions, bubbles);
+        boss = new BossSystem(levels.getActiveTiles(), collisions, bubbles);
         transition = new LevelTransition(player, levels);
     }
 
@@ -75,11 +82,19 @@ public final class GameController {
             return;
         }
 
+        // transition.complete() 會先把 Player 放到第二關右下角；完成後才開始 Boss 延遲。
+        if (transition.isComplete() && !boss.getBoss().isActive()) {
+            bossAppearanceDelay += dt;
+            if (bossAppearanceDelay >= Constants.BOSS_APPEAR_DELAY_SECONDS)
+                boss.activate();
+        }
+
         bubbles.updateCooldown(dt);
         player.updateInvulnerability(dt);
         updatePlayer(dt);
         enemies.update(dt, player);
         bubbles.update(dt);
+        boss.update(dt, player);
         enemies.checkPlayerContact(player);
         bubbles.checkPlayerContact(player);
 
@@ -87,8 +102,12 @@ public final class GameController {
         boolean allEnemiesDefeated = levels.getEnemies().stream()
                 .allMatch(enemy -> enemy.getState() == EnemyState.DEFEATED);
 
+        // 第一關只檢查普通敵人；第二關還必須擊敗 Boss，否則出口不會出現。
+        boolean levelCleared = allEnemiesDefeated
+                && (!transition.isComplete() || boss.getBoss().isDefeated());
+
         // 敵人全滅後開始關卡轉場；轉場開始時清除泡泡與目前保存的按鍵狀態
-        if (allEnemiesDefeated && !transition.isComplete()) {
+        if (levelCleared && !transition.isComplete()) {
             transition.start(() -> {
                 bubbles.clear();
                 keys.clear();
@@ -97,7 +116,7 @@ public final class GameController {
         }
 
         // 最終關卡轉場完成後顯示出口；玩家死亡為失敗，碰到出口則勝利
-        doorVisible = allEnemiesDefeated && transition.isComplete();
+        doorVisible = levelCleared && transition.isComplete();
         if (player.getHp() <= 0)
             finish(false);
         if (doorVisible && playerOverlapsDoor())
@@ -189,10 +208,21 @@ public final class GameController {
         return bubbles.getBubbles();
     }
 
+    public Boss getBoss() {
+        return boss.getBoss();
+    }
+
+    public List<BossBubble> getBossBubbles() {
+        return boss.getAttackBubbles();
+    }
+
     public int getActiveEnemyCount() {
-        return (int) levels.getEnemies().stream()
+        int regularEnemies = (int) levels.getEnemies().stream()
                 .filter(enemy -> enemy.getState() != EnemyState.DEFEATED)
                 .count();
+
+        int activeBoss = transition.isComplete() && !boss.getBoss().isDefeated() ? 1 : 0;
+        return regularEnemies + activeBoss;
     }
 
     public boolean isDoorVisible() {
