@@ -8,6 +8,10 @@ public final class Constants {
     public static final double WINDOW_HEIGHT = 640;
     public static final double HUD_HEIGHT = 54; // 上方資訊欄高度
 
+    // 漫畫過場
+    public static final double COMIC_SLIDE_SPEED = 1_200; // 漫畫過場速度（pixel/second）；數值越大，圖片加入得越快
+    public static final double COMIC_FINAL_HOLD_SECONDS = 1.2; // 幾秒後進入 GameView
+
     // 關卡位置與尺寸
     public static final double DOOR_X = 850;
     public static final double DOOR_Y = 430;

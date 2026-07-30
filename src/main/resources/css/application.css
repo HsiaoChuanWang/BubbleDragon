@@ -72,6 +72,13 @@
     -fx-background-color: #102447;
 }
 
+.story-screen {
+    -fx-background-image: url("../images/story-background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
 .info-panel {
     -fx-background-color: #091a36;
     -fx-alignment: center-left;

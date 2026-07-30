@@ -23,7 +23,7 @@ public final class HomeView {
         subtitle.getStyleClass().add("subtitle");
         Button start = new Button("開始遊戲");
         start.getStyleClass().add("primary-button");
-        start.setOnAction(e -> app.startGame());
+        start.setOnAction(e -> app.showStory());
         Label controls = new Label("方向鍵移動　·　Space 跳躍　·　Z 發射泡泡");
         controls.getStyleClass().add("hint");
         VBox root = new VBox(26, title, subtitle, start, controls);

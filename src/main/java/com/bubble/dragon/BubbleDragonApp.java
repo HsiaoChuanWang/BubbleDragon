@@ -4,6 +4,7 @@ import com.bubble.dragon.util.Constants;
 import com.bubble.dragon.view.GameOverView;
 import com.bubble.dragon.view.GameView;
 import com.bubble.dragon.view.HomeView;
+import com.bubble.dragon.view.StoryView;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -15,6 +16,7 @@ public final class BubbleDragonApp extends Application {
     // JavaFX 提供一 視窗 Stage
     private Stage stage;
     private GameView activeGame;
+    private StoryView activeStory;
 
     public static void launchApp(String[] args) {
         launch(args);
@@ -32,12 +34,22 @@ public final class BubbleDragonApp extends Application {
     }
 
     public void showHome() {
+        stopStory();
         stopGame();
         setScene(new HomeView(this).createScene());
     }
 
+    public void showStory() {
+        stopGame();
+        stopStory();
+        activeStory = new StoryView(this);
+        setScene(activeStory.createScene());
+        activeStory.play();
+    }
+
     // GameView 會有 60 FPS 的 Game Loop，必須在切換畫面時停止，否則會持續消耗 CPU
     public void startGame() {
+        stopStory();
         stopGame();
         activeGame = new GameView(this);
         setScene(activeGame.createScene());
@@ -45,6 +57,7 @@ public final class BubbleDragonApp extends Application {
     }
 
     public void showResult(boolean victory) {
+        stopStory();
         stopGame();
         setScene(new GameOverView(this, victory).createScene());
     }
@@ -61,6 +74,13 @@ public final class BubbleDragonApp extends Application {
         if (activeGame != null) {
             activeGame.stop();
             activeGame = null;
+        }
+    }
+
+    private void stopStory() {
+        if (activeStory != null) {
+            activeStory.stop();
+            activeStory = null;
         }
     }
 }
