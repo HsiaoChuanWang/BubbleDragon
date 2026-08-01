@@ -5,9 +5,9 @@ import com.bubble.dragon.map.Tile;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
-// 依地圖的 texturePattern 繪製固定寬 24px 的完整地磚圖片，長度不限
+// 依地圖的 texturePattern 繪製固定寬 72px 的完整地磚圖片，長度不限
 final class TileRenderer {
-    private static final double TEXTURE_WIDTH = 24;
+    private static final double TEXTURE_WIDTH = 72;
 
     void draw(GraphicsContext graphics, Iterable<Tile> tiles, double offsetY) {
         for (Tile tile : tiles) {
@@ -20,15 +20,14 @@ final class TileRenderer {
                 double blockX = tile.getX() + column * TEXTURE_WIDTH;
 
                 // 計算材質的 Y；offsetY 用來讓地磚在關卡轉場時整體上下移動
-                double blockY = tile.getY() + offsetY;
-
-                // 一般材質寬度為 24px；最後一塊若超出地磚右側，就只繪製剩餘寬度
+                // 一般材質寬度為 72px；最後一塊若超出地磚右側，就只繪製剩餘寬度
                 double blockWidth = Math.min(TEXTURE_WIDTH, tile.getRight() - blockX);
 
                 // 循環選取 texturePattern 中的圖片路徑
                 String path = tile.getTexturePattern().get(column % tile.getTexturePattern().size());
                 Image texture = ImageLoader.load(path);
                 double renderHeight = blockWidth * texture.getHeight() / texture.getWidth();
+                double blockY = tile.getRenderY() + offsetY;
                 graphics.drawImage(texture, blockX, blockY, blockWidth, renderHeight);
             }
         }

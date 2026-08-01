@@ -5,8 +5,8 @@ import com.bubble.dragon.util.Constants;
 import com.bubble.dragon.util.CountdownTimer;
 
 public final class Enemy extends GameObject {
-    private static final double WIDTH = 40;
-    private static final double HEIGHT = 40;
+    private static final double WIDTH = 60;
+    private static final double HEIGHT = 120;
 
     private EnemyState state = EnemyState.JUMP;
     private final CountdownTimer trapTimer = new CountdownTimer(Constants.TRAP_SECONDS); // 掙脫倒數

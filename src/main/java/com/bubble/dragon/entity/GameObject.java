@@ -57,4 +57,8 @@ public abstract class GameObject {
     public double getBottom() {
         return y + height;
     }
+
+    public double getTop() {
+        return y - height;
+    }
 }

@@ -30,7 +30,7 @@ public final class BubbleSystem {
         double x = player.isFacingRight()
                 ? player.getRight()
                 : player.getX() - Constants.BUBBLE_SIZE;
-        double y = player.getY() + (player.getHeight() - Constants.BUBBLE_SIZE) / 2; // 泡泡垂直置中，模擬從嘴巴射出高度
+        double y = player.getTop() + Constants.BUBBLE_SIZE / 2; // 泡泡垂直置中，模擬從嘴巴射出高度
         double velocityX = player.isFacingRight() ? Constants.BUBBLE_SPEED : -Constants.BUBBLE_SPEED;
         bubbles.add(new Bubble(x, y, velocityX));
         shootCooldown = Constants.SHOOT_COOLDOWN_SECONDS;
@@ -54,7 +54,21 @@ public final class BubbleSystem {
     // 困敵泡泡與敵人一起上升，並保持敵人位置在泡泡中央
     private void moveTrappedBubble(Bubble bubble, double dt) {
         bubble.setY(bubble.getY() + bubble.getVelocityY() * dt);
+        updateTrappedBubbleShake(bubble);
         centerEnemy(bubble, bubble.getTrappedEnemy());
+    }
+
+    // 敵人脫困前最後兩秒，讓泡泡以原位置為中心左右抖動 2px
+    private void updateTrappedBubbleShake(Bubble bubble) {
+        double remaining = bubble.getTrappedEnemy().getTrapTimer().getRemainingSeconds();
+        if (remaining > Constants.TRAPPED_BUBBLE_SHAKE_SECONDS) {
+            bubble.setShakeOffsetX(0);
+            return;
+        }
+
+        double elapsed = Constants.TRAPPED_BUBBLE_SHAKE_SECONDS - remaining;
+        double angle = elapsed * Constants.TRAPPED_BUBBLE_SHAKES_PER_SECOND * Math.PI * 2;
+        bubble.setShakeOffsetX(Math.sin(angle) * Constants.TRAPPED_BUBBLE_SHAKE_DISTANCE);
     }
 
     // 普通泡泡先水平移動，超過水平移動時間後改為垂直上升
