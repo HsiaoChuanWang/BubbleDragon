@@ -11,6 +11,7 @@ import com.bubble.dragon.view.StoryView;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -33,6 +34,7 @@ public final class BubbleDragonApp extends Application {
         loadFont("/fonts/Huninn-Regular.ttf");
         stage = primaryStage; // 由 JavaFX 接管視窗建立
         stage.setTitle(Constants.GAME_TITLE); // 設定視窗上方的標題
+        loadWindowIcon("/images/player-stand.png");
         stage.setResizable(false); // 固定視窗大小，不能隨意拉大縮小
         stage.setOnCloseRequest(event -> stopGame()); // 右上角 X 關閉觸發
         showHome(); // 預設先顯示「首頁」
@@ -53,6 +55,19 @@ public final class BubbleDragonApp extends Application {
                 System.out.println("Loaded font: " + font.getFamily() + " (" + font.getName() + ")");
         } catch (IOException exception) {
             System.err.println("Could not close font resource: " + resourcePath);
+        }
+    }
+
+    private void loadWindowIcon(String resourcePath) {
+        try (InputStream stream = getClass().getResourceAsStream(resourcePath)) {
+            if (stream == null) {
+                System.err.println("Window icon resource not found: " + resourcePath);
+                return;
+            }
+
+            stage.getIcons().add(new Image(stream));
+        } catch (IOException exception) {
+            System.err.println("Could not close window icon resource: " + resourcePath);
         }
     }
 
