@@ -13,7 +13,7 @@ import javafx.scene.text.Font;
 // 控制遊戲畫面的繪製順序，簡單元素直接繪製，複雜實體交給專用 Renderer
 public final class GameCanvas extends Canvas {
     // 背景圖片的上半部是第二關，下半部是第一關；轉場時會在兩者之間移動裁切位置
-    private static final Image BACKGROUND_IMAGE = ImageLoader.load("/images/background.jpg");
+    private static final Image BACKGROUND_IMAGE = ImageLoader.load("/images/game-background.png");
 
     // 玩家、敵人與地磚的繪製細節分別交給專用 Renderer 處理
     private final PlayerRenderer playerRenderer = new PlayerRenderer();
@@ -67,7 +67,7 @@ public final class GameCanvas extends Canvas {
 
     /*
      * 繪製目前關卡的背景
-     * background.jpg 垂直放置了兩張等高的關卡背景：圖片上半部是第二關，下半部是第一關
+     * background 垂直放置了兩張等高的關卡背景：圖片上半部是第二關，下半部是第一關
      * transitionProgress 從 0 增加到 1 時，裁切位置會由下半部移到上半部
      */
     private void drawBackground(
@@ -147,7 +147,7 @@ public final class GameCanvas extends Canvas {
 
         // 在門的上方顯示「出口」文字
         graphics.setFill(Color.WHITE);
-        graphics.setFont(Font.font(18));
+        graphics.setFont(Font.font("Huninn", 18));
         graphics.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
     }
 }

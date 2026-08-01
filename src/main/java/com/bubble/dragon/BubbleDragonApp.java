@@ -1,5 +1,8 @@
 package com.bubble.dragon;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.bubble.dragon.util.Constants;
 import com.bubble.dragon.view.GameOverView;
 import com.bubble.dragon.view.GameView;
@@ -8,6 +11,7 @@ import com.bubble.dragon.view.StoryView;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 // @JavaFX 應用程式
@@ -25,12 +29,31 @@ public final class BubbleDragonApp extends Application {
     // 初始化 Stage 與 Scene，並顯示首頁
     @Override
     public void start(Stage primaryStage) {
+        loadFont("/fonts/LilitaOne-Regular.ttf");
+        loadFont("/fonts/Huninn-Regular.ttf");
         stage = primaryStage; // 由 JavaFX 接管視窗建立
         stage.setTitle(Constants.GAME_TITLE); // 設定視窗上方的標題
         stage.setResizable(false); // 固定視窗大小，不能隨意拉大縮小
         stage.setOnCloseRequest(event -> stopGame()); // 右上角 X 關閉觸發
         showHome(); // 預設先顯示「首頁」
         stage.show(); // 正式把視窗顯示在螢幕上
+    }
+
+    private void loadFont(String resourcePath) {
+        try (InputStream stream = getClass().getResourceAsStream(resourcePath)) {
+            if (stream == null) {
+                System.err.println("Font resource not found: " + resourcePath);
+                return;
+            }
+
+            Font font = Font.loadFont(stream, 12);
+            if (font == null)
+                System.err.println("Could not load font: " + resourcePath);
+            else
+                System.out.println("Loaded font: " + font.getFamily() + " (" + font.getName() + ")");
+        } catch (IOException exception) {
+            System.err.println("Could not close font resource: " + resourcePath);
+        }
     }
 
     public void showHome() {
