@@ -65,12 +65,36 @@
                 <configuration><useModulePath>false</useModulePath></configuration>
             </plugin>
             
-            <!-- 提供 mvn javafx:run，並指定模組與主類別。 -->
+            <!--
+                提供兩種 JavaFX Maven 指令：
+                1. mvn javafx:run：直接啟動遊戲。
+                2. mvn clean javafx:jlink：建立內含 Java、JavaFX 與遊戲模組的自包含 Runtime。
+            -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
-                <configuration><mainClass>com.bubble.dragon/com.bubble.dragon.Main</mainClass></configuration>
+                <configuration>
+                    <!-- 以「模組名稱/完整主類別」指定遊戲入口。 -->
+                    <mainClass>com.bubble.dragon/com.bubble.dragon.Main</mainClass>
+
+                    <!-- jlink 產生的啟動器名稱。 -->
+                    <launcher>BubbleDragon</launcher>
+
+                    <!-- jlink 建立的自包含 Runtime 資料夾名稱。 -->
+                    <jlinkImageName>BubbleDragonRuntime</jlinkImageName>
+
+                    <!-- 同時輸出 Runtime ZIP，方便測試或備份。 -->
+                    <jlinkZipName>BubbleDragonRuntime</jlinkZipName>
+
+                    <!-- 強制所有執行期依賴使用 module-path，配合本專案的 module-info.java。 -->
+                    <runtimePathOption>MODULEPATH</runtimePathOption>
+
+                    <!-- 移除除錯資訊、開發用標頭與說明頁，縮小最後的打包體積。 -->
+                    <stripDebug>true</stripDebug>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <noManPages>true</noManPages>
+                </configuration>
             </plugin>
         </plugins>
     </build>
