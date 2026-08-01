@@ -14,6 +14,7 @@ public final class GameMap {
 
     public static final class TileData {
         public double x, y, width;
+        public double collisionOffsetY = 0;
         public boolean solid = true;
         public List<String> texturePattern = new ArrayList<>();
 

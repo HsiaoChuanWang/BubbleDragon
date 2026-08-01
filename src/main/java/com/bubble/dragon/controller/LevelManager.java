@@ -37,7 +37,13 @@ public final class LevelManager {
             List<String> pattern = data.texturePattern.isEmpty()
                     ? map.tileTextures
                     : data.texturePattern;
-            destination.add(new Tile(data.x, data.y, data.width, data.solid, pattern));
+            destination.add(new Tile(
+                    data.x,
+                    data.y,
+                    data.width,
+                    data.collisionOffsetY,
+                    data.solid,
+                    pattern));
         });
     }
 

@@ -11,16 +11,19 @@ public final class Tile extends GameObject {
 
     private final boolean solid;
     private final List<String> texturePattern;
+    private final double renderY; // tile 圖片最上邊的 y 座標
 
     public Tile(
             double x,
             double y,
             double width,
+            double collisionOffsetY, // 可以手動調整碰撞箱的高度，避免碰撞箱太高導致玩家懸浮
             boolean solid,
             List<String> texturePattern) {
 
         // 磚塊圖片可向下完整延伸，物理碰撞永遠只使用最上方 24px
-        super(x, y, width, COLLISION_HEIGHT);
+        super(x, y + collisionOffsetY, width, COLLISION_HEIGHT);
+        this.renderY = y;
         this.solid = solid;
         this.texturePattern = List.copyOf(texturePattern);
     }
@@ -31,5 +34,9 @@ public final class Tile extends GameObject {
 
     public List<String> getTexturePattern() {
         return texturePattern;
+    }
+
+    public double getRenderY() {
+        return renderY;
     }
 }

@@ -29,7 +29,7 @@ public final class Constants {
 
     // 玩家移動與受傷反應
     public static final double PLAYER_SPEED = 260;
-    public static final double JUMP_SPEED = 610;
+    public static final double JUMP_SPEED = 680;
     public static final double PLAYER_DAMAGE_BOUNCE_SPEED = 360; // 玩家受傷後向上彈起的速度
     public static final double PLAYER_HIT_KNOCKBACK_DISTANCE = 35; // 玩家受傷後的水平擊退距離
     public static final double PLAYER_HIT_SCREEN_MARGIN = 5; // 玩家受傷擊退後與畫面左右邊界保留的距離
