@@ -4,7 +4,9 @@ import com.bubble.dragon.entity.GameObject;
 import com.bubble.dragon.util.Constants;
 
 public final class Boss extends GameObject {
-    public static final double SIZE = 40;
+    // public static final double SIZE = 40;
+    public static final double WIDTH = 60;
+    public static final double HEIGHT = 120;
     private static final int INITIAL_HP = 5;
 
     private BossState state = BossState.INACTIVE;
@@ -14,7 +16,7 @@ public final class Boss extends GameObject {
     private double invulnerableTime; // 無敵時間
 
     public Boss() {
-        super(0, 0, SIZE, SIZE);
+        super(0, 0, WIDTH, HEIGHT);
     }
 
     public BossState getState() {

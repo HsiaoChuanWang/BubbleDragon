@@ -42,15 +42,19 @@ public final class Constants {
     public static final double ENEMY_JUMP_SECONDS = 1; // 敵人維持 JUMP 狀態後切換成 FLY 的秒數
     public static final double ENEMY_FLY_SECONDS = 1; // 敵人維持 FLY 狀態後切換成 STOP 的秒數
     public static final double ENEMY_STOP_SECONDS = 1; // 敵人維持 STOP 狀態後重新切換成 JUMP 的秒數
-    public static final double TRAP_SECONDS = 20;
+    public static final double TRAP_SECONDS = 10;
+    public static final double TRAPPED_BUBBLE_SHAKE_SECONDS = 2; // 敵人脫困前開始抖動的秒數
+    public static final double TRAPPED_BUBBLE_SHAKE_DISTANCE = 2; // 受困泡泡左右抖動的像素距離
+    public static final double TRAPPED_BUBBLE_SHAKES_PER_SECOND = 8; // 每秒左右擺動次數
 
     // 泡泡移動、存在時間與活動範圍
-    public static final double BUBBLE_SPEED = 390;
-    public static final double BUBBLE_HORIZONTAL_TRAVEL_SECONDS = 1; // 普通泡泡水平飛行的秒數
-    public static final double BUBBLE_RISE_SPEED = 12; // 普通泡泡飛行時的上升速度
-    public static final double TRAPPED_BUBBLE_VERTICAL_SPEED = -45; // 捕捉敵人後向上飄的速度
-    public static final double BUBBLE_LIFETIME = 20; // 未困住敵人的普通泡泡最多存在秒數
-    public static final double BUBBLE_SIZE = 56; // 大於 40x40 的敵人，讓泡泡能完整包覆敵人
+    public static final double BUBBLE_SPEED = 350;
+    public static final double BUBBLE_HORIZONTAL_TRAVEL_SECONDS = 0.75; // 普通泡泡水平飛行的秒數
+    public static final double BUBBLE_RISE_SPEED = 120; // 普通泡泡飛行時的上升速度
+    public static final double TRAPPED_BUBBLE_VERTICAL_SPEED = -90; // 捕捉敵人後向上飄的速度
+    public static final double BUBBLE_LIFETIME = 6; // 未困住敵人的普通泡泡最多存在秒數
+    public static final double BUBBLE_SIZE = 56; // 普通飛行泡泡的大小
+    public static final double TRAPPED_BUBBLE_SIZE = 112; // 捕捉 Enemy 後的泡泡大小
     public static final double SHOOT_COOLDOWN_SECONDS = 0.32; // 兩次發射泡泡之間需等待的秒數
 
     // Boss 登場由「展翅攻擊 1 秒 + 收翅停火 1 秒」組成，總共重複 2 輪

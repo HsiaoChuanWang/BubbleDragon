@@ -1,6 +1,6 @@
 package com.bubble.dragon.util;
 
-// 目前僅用於敵人被泡泡困住後的三秒倒數
+// 目前用於敵人被泡泡困住後的脫困倒數
 public final class CountdownTimer {
     private final double duration;
     private double remaining;
