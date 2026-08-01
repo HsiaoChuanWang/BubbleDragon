@@ -8,12 +8,12 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 
 // 控制遊戲畫面的繪製順序，簡單元素直接繪製，複雜實體交給專用 Renderer
 public final class GameCanvas extends Canvas {
     // 背景圖片的上半部是第二關，下半部是第一關；轉場時會在兩者之間移動裁切位置
     private static final Image BACKGROUND_IMAGE = ImageLoader.load("/images/game-background.png");
+    private static final Image DOOR_IMAGE = ImageLoader.load("/images/door.png");
 
     // 玩家、敵人與地磚的繪製細節分別交給專用 Renderer 處理
     private final PlayerRenderer playerRenderer = new PlayerRenderer();
@@ -125,29 +125,18 @@ public final class GameCanvas extends Canvas {
         }
     }
 
-    // 所有敵人消滅且關卡轉場完成後，在指定位置繪製出口
+    // 所有敵人消滅且關卡轉場完成後，繪製隨機生成在地磚上的出口圖片
     private void drawDoor(GraphicsContext graphics, GameController game) {
         // 出口尚未開啟時直接結束，不進行後續繪製。
         if (!game.isDoorVisible())
             return;
 
-        // 繪製黃色圓角矩形作為門的主體
-        graphics.setFill(Color.web("#ffd166"));
-        graphics.fillRoundRect(
+        // 直接繪製已裁切去背的門圖片
+        graphics.drawImage(
+                DOOR_IMAGE,
                 game.getDoorX(),
                 game.getDoorY(),
                 Constants.DOOR_WIDTH,
-                Constants.DOOR_HEIGHT,
-                16,
-                16);
-
-        // 在門的右側繪製深色圓形門把
-        graphics.setFill(Color.web("#604b2d"));
-        graphics.fillOval(game.getDoorX() + 35, game.getDoorY() + 36, 6, 6);
-
-        // 在門的上方顯示「出口」文字
-        graphics.setFill(Color.WHITE);
-        graphics.setFont(Font.font("Huninn", 18));
-        graphics.fillText("出口", game.getDoorX() + 3, game.getDoorY() - 8);
+                Constants.DOOR_HEIGHT);
     }
 }

@@ -7,20 +7,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 
 final class PlayerRenderer {
-    private static final Image STANDING = ImageLoader.load("/images/stand.png");
-    private static final Image LEFT_LEG = ImageLoader.load("/images/left_leg.png");
-    private static final Image RIGHT_LEG = ImageLoader.load("/images/right_leg.png");
-    private static final Image BLOW = ImageLoader.load("/images/blow.png");
+
+    // 預先載入玩家各動作的已裁切透明圖片
+    private static final Image STANDING = ImageLoader.load("/images/player-stand.png");
+    private static final Image LEFT_LEG = ImageLoader.load("/images/player-left-leg.png");
+    private static final Image RIGHT_LEG = ImageLoader.load("/images/player-right-leg.png");
+    private static final Image BLOW = ImageLoader.load("/images/player-blow.png");
     private static final Image[] WALK_IMAGES = { LEFT_LEG, STANDING, RIGHT_LEG, STANDING };
 
-    private static final long WALK_FRAME_NANOS = 60_000_000; // 每張走路圖片顯示 6000 萬奈秒 = 0.06 秒
-    private static final double CROP_X = 347; // 從原圖 X = 347 的位置開始裁切
-    private static final double CROP_Y = 0; // 從原圖最上方 Y = 0 的位置開始裁切
-    private static final double CROP_WIDTH = 741; // 從原圖裁切的寬度
-    private static final double CROP_HEIGHT = 872; // 從原圖裁切的高度
-    private static final double IMAGE_WIDTH = 100; // 玩家圖片在遊戲畫面上的顯示寬度
-    private static final double IMAGE_HEIGHT = IMAGE_WIDTH * CROP_HEIGHT / CROP_WIDTH; // 依裁切比例計算顯示高度，避免圖片變形
-    private static final double INVULNERABLE_OPACITY = .48; // 玩家處於無敵時間時顯示為 48% 不透明
+    private static final long WALK_FRAME_NANOS = 60_000_000; // 走路動畫每幀顯示 0.06 秒
+    private static final double IMAGE_WIDTH = 100; // 玩家圖片在畫面上的顯示寬度
+    private static final double INVULNERABLE_OPACITY = .48; // 玩家無敵時的圖片不透明度
 
     private long walkAnimationStart;
     private boolean wasWalking;
@@ -34,35 +31,27 @@ final class PlayerRenderer {
 
         Image image = shooting ? BLOW : STANDING;
         if (walking && !shooting) {
+            // 依經過時間在走路圖片中循環切換
             int frame = (int) ((now - walkAnimationStart) / WALK_FRAME_NANOS % WALK_IMAGES.length);
             image = WALK_IMAGES[frame];
         }
 
+        // 直接顯示完整圖片，並依原圖長寬比計算高度
+        double imageHeight = IMAGE_WIDTH * image.getHeight() / image.getWidth();
+        // 圖片水平居中於玩家碰撞箱，底部與碰撞箱底部對齊
         double imageX = player.getX() + (player.getWidth() - IMAGE_WIDTH) / 2;
-        double imageY = player.getY() + player.getHeight() - IMAGE_HEIGHT;
+        double imageY = player.getY() + player.getHeight() - imageHeight;
+
         graphics.save();
         graphics.setGlobalAlpha(player.isInvulnerable() ? INVULNERABLE_OPACITY : 1);
-
-        if (player.isFacingRight()) {
-            drawImage(graphics, image, imageX, imageY);
+        if (!player.isFacingRight()) {
+            graphics.drawImage(image, imageX, imageY, IMAGE_WIDTH, imageHeight);
         } else {
+            // 原圖面向左，玩家向右時水平鏡像圖片
             graphics.translate(imageX + IMAGE_WIDTH, 0);
             graphics.scale(-1, 1);
-            drawImage(graphics, image, 0, imageY);
+            graphics.drawImage(image, 0, imageY, IMAGE_WIDTH, imageHeight);
         }
         graphics.restore();
-    }
-
-    private void drawImage(GraphicsContext graphics, Image image, double x, double y) {
-        graphics.drawImage(
-                image,
-                CROP_X,
-                CROP_Y,
-                CROP_WIDTH,
-                CROP_HEIGHT,
-                x,
-                y,
-                IMAGE_WIDTH,
-                IMAGE_HEIGHT);
     }
 }

@@ -44,6 +44,8 @@ public final class GameController {
     private boolean jumpHeld; // 記錄上一幀是否按住跳躍，避免按住空白鍵時連續起跳
     private boolean finished; // 遊戲結束後不再更新，避免重複呼叫 resultHandler
     private boolean doorVisible; // 所有敵人消滅且關卡轉場完成後才顯示出口
+    private double doorX;
+    private double doorY;
 
     // 建立控制器時只執行一次：載入關卡、建立玩家，並初始化各遊戲系統
     public GameController(Consumer<Boolean> resultHandler) {
@@ -116,7 +118,10 @@ public final class GameController {
         }
 
         // 最終關卡轉場完成後顯示出口；玩家死亡為失敗，碰到出口則勝利
-        doorVisible = levelCleared && transition.isComplete();
+        boolean shouldShowDoor = levelCleared && transition.isComplete();
+        if (shouldShowDoor && !doorVisible)
+            placeDoorOnBottomLevelTwoTile();
+        doorVisible = shouldShowDoor;
         if (player.getHp() <= 0)
             finish(false);
         if (doorVisible && playerOverlapsDoor())
@@ -170,10 +175,24 @@ public final class GameController {
                 player.getY(),
                 player.getWidth(),
                 player.getHeight(),
-                Constants.DOOR_X,
-                Constants.DOOR_Y,
+                doorX,
+                doorY,
                 Constants.DOOR_WIDTH,
                 Constants.DOOR_HEIGHT);
+    }
+
+    // 將門置中放在第二關最下方的實心地磚頂面
+    private void placeDoorOnBottomLevelTwoTile() {
+        Tile tile = levels.getLevelTwoTiles().stream()
+                .filter(Tile::isSolid)
+                .filter(candidate -> candidate.getWidth() >= Constants.DOOR_WIDTH)
+                .max((first, second) -> Double.compare(first.getY(), second.getY()))
+                .orElse(null);
+        if (tile == null)
+            return;
+
+        doorX = tile.getX() + (tile.getWidth() - Constants.DOOR_WIDTH) / 2;
+        doorY = tile.getY() - Constants.DOOR_HEIGHT;
     }
 
     // 保證勝敗結果只回報一次，避免畫面被重複切換
@@ -238,10 +257,11 @@ public final class GameController {
     }
 
     public double getDoorX() {
-        return Constants.DOOR_X;
+        return doorX;
     }
 
     public double getDoorY() {
-        return Constants.DOOR_Y;
+        return doorY;
     }
+
 }

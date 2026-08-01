@@ -35,7 +35,7 @@
 }
 
 .story-screen {
-    -fx-background-image: url("../images/story-background.jpg");
+    -fx-background-image: url("../images/story-background.png");
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-background-repeat: no-repeat;

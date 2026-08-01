@@ -13,10 +13,8 @@ public final class Constants {
     public static final double COMIC_FINAL_HOLD_SECONDS = 1.2; // 幾秒後進入 GameView
 
     // 關卡位置與尺寸
-    public static final double DOOR_X = 850;
-    public static final double DOOR_Y = 430;
-    public static final double DOOR_WIDTH = 48;
-    public static final double DOOR_HEIGHT = 70;
+    public static final double DOOR_WIDTH = 160;
+    public static final double DOOR_HEIGHT = 170;
 
     // 共用物理與遊戲迴圈
     // 速度單位為 pixel/second，重力為 pixel/second²
