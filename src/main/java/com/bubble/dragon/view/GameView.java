@@ -6,6 +6,7 @@ import com.bubble.dragon.game.GameLoop;
 import com.bubble.dragon.ui.GameCanvas;
 import com.bubble.dragon.ui.HUD;
 import com.bubble.dragon.util.Constants;
+import com.bubble.dragon.util.GameAudio;
 
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
@@ -28,10 +29,15 @@ public final class GameView {
     // 讓遊戲持續更新角色狀態、處理碰撞、重新繪製畫面
     // 這個欄位會在建構子中建立，所以此處沒有直接使用 new
     private final GameLoop loop;
+    private final GameAudio audio = new GameAudio();
 
     public GameView(BubbleDragonApp app) {
         this.app = app;
-        controller = new GameController(app::showResult); // 等同於 (score) -> app.showResult(score)
+        controller = new GameController(
+                app::showResult,
+                audio::playBubbleSound,
+                audio::playDamageSound,
+                audio::playPopBubbleSound);
         loop = new GameLoop(this::frame); // 等同於 (dt -> this.frame(dt));
     }
 
@@ -64,10 +70,12 @@ public final class GameView {
 
         // 開始每幀呼叫 frame()，讓遊戲持續更新
         loop.start();
+        audio.startBattleMusic();
     }
 
     public void stop() {
         loop.stop();
+        audio.stop();
     }
 
     // frame 定義「每一幀要做什麼」

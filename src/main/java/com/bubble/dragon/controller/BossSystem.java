@@ -387,7 +387,7 @@ public final class BossSystem {
                 continue;
 
             // 命中的泡泡立刻失效，避免下一幀再次扣除 Boss HP
-            bubble.deactivate();
+            playerBubbles.deactivate(bubble);
             if (boss.damage() && !boss.isDefeated())
                 relocationDelay = Constants.BOSS_RELOCATE_DELAY_SECONDS;
             break;

@@ -14,19 +14,25 @@ import com.bubble.dragon.util.Constants;
 public final class BubbleSystem {
     private final List<Bubble> bubbles = new ArrayList<>();
     private final List<Enemy> enemies;
+    private final Runnable popSoundHandler;
     private double shootCooldown; // 玩家射擊泡泡的冷卻時間，若大於 0 則玩家無法射擊
 
     public BubbleSystem(List<Enemy> enemies) {
+        this(enemies, () -> {});
+    }
+
+    public BubbleSystem(List<Enemy> enemies, Runnable popSoundHandler) {
         this.enemies = enemies;
+        this.popSoundHandler = popSoundHandler;
     }
 
     public void updateCooldown(double dt) {
         shootCooldown = Math.max(0, shootCooldown - dt);
     }
 
-    public void shoot(Player player) {
+    public boolean shoot(Player player) {
         if (shootCooldown > 0)
-            return;
+            return false;
         double x = player.isFacingRight()
                 ? player.getRight()
                 : player.getX() - Constants.BUBBLE_SIZE;
@@ -34,6 +40,7 @@ public final class BubbleSystem {
         double velocityX = player.isFacingRight() ? Constants.BUBBLE_SPEED : -Constants.BUBBLE_SPEED;
         bubbles.add(new Bubble(x, y, velocityX));
         shootCooldown = Constants.SHOOT_COOLDOWN_SECONDS;
+        return true;
     }
 
     public void update(double dt) {
@@ -130,7 +137,7 @@ public final class BubbleSystem {
 
     private void expireFreeBubble(Bubble bubble) {
         if (!bubble.hasTrappedEnemy() && bubble.getAge() > Constants.BUBBLE_LIFETIME)
-            bubble.deactivate();
+            deactivate(bubble);
     }
 
     // 玩家與困敵泡泡接觸後，敵人被擊敗，泡泡失效
@@ -140,7 +147,7 @@ public final class BubbleSystem {
                     && bubble.hasTrappedEnemy()
                     && OverlapChecker.overlaps(player, bubble)) {
                 bubble.getTrappedEnemy().defeat();
-                bubble.deactivate();
+                deactivate(bubble);
             }
         }
     }
@@ -149,7 +156,14 @@ public final class BubbleSystem {
     public void deactivateBubblesContaining(Enemy enemy) {
         bubbles.stream()
                 .filter(bubble -> bubble.getTrappedEnemy() == enemy)
-                .forEach(Bubble::deactivate);
+                .forEach(this::deactivate);
+    }
+
+    public void deactivate(Bubble bubble) {
+        if (!bubble.isActive())
+            return;
+        bubble.deactivate();
+        popSoundHandler.run();
     }
 
     public void clear() {

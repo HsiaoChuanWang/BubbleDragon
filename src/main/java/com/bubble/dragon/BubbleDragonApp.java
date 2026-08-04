@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.bubble.dragon.util.Constants;
+import com.bubble.dragon.util.RelaxMusic;
 import com.bubble.dragon.view.GameOverView;
 import com.bubble.dragon.view.GameView;
 import com.bubble.dragon.view.HomeView;
@@ -22,6 +23,7 @@ public final class BubbleDragonApp extends Application {
     private Stage stage;
     private GameView activeGame;
     private StoryView activeStory;
+    private RelaxMusic relaxMusic;
 
     public static void launchApp(String[] args) {
         launch(args);
@@ -33,6 +35,7 @@ public final class BubbleDragonApp extends Application {
         loadFont("/fonts/LilitaOne-Regular.ttf");
         loadFont("/fonts/Huninn-Regular.ttf");
         stage = primaryStage; // 由 JavaFX 接管視窗建立
+        relaxMusic = new RelaxMusic();
         stage.setTitle(Constants.GAME_TITLE); // 設定視窗上方的標題
         loadWindowIcon("/images/player-stand.png");
         stage.setResizable(false); // 固定視窗大小，不能隨意拉大縮小
@@ -75,6 +78,7 @@ public final class BubbleDragonApp extends Application {
         stopStory();
         stopGame();
         setScene(new HomeView(this).createScene());
+        relaxMusic.play();
     }
 
     public void showStory() {
@@ -83,12 +87,14 @@ public final class BubbleDragonApp extends Application {
         activeStory = new StoryView(this);
         setScene(activeStory.createScene());
         activeStory.play();
+        relaxMusic.play();
     }
 
     // GameView 會有 60 FPS 的 Game Loop，必須在切換畫面時停止，否則會持續消耗 CPU
     public void startGame() {
         stopStory();
         stopGame();
+        relaxMusic.pause();
         activeGame = new GameView(this);
         setScene(activeGame.createScene());
         activeGame.start();
@@ -98,6 +104,15 @@ public final class BubbleDragonApp extends Application {
         stopStory();
         stopGame();
         setScene(new GameOverView(this, victory).createScene());
+        relaxMusic.play();
+    }
+
+    @Override
+    public void stop() {
+        stopStory();
+        stopGame();
+        if (relaxMusic != null)
+            relaxMusic.dispose();
     }
 
     private void setScene(Scene scene) {

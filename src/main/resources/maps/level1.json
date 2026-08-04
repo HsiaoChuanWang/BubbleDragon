@@ -55,8 +55,8 @@
         }
     ],
     "enemies": [
-        { "x": 440, "y": 260, "direction": 1 },
-        { "x": 760, "y": 200, "direction": -1 },
-        { "x": 130, "y": 200, "direction": 1 }
+        { "x": 440, "y": 180, "direction": 1 },
+        { "x": 760, "y": 120, "direction": -1 },
+        { "x": 130, "y": 120, "direction": 1 }
     ]
 }

@@ -28,6 +28,8 @@ public final class GameController {
     // 勝敗發生時由 BubbleDragonApp 傳入的 callback 負責切換 Scene
     // Consumer 是 Java 內建的「接收一個值、不回傳值」函式介面，這裡用來傳遞勝敗結果
     private final Consumer<Boolean> resultHandler;
+    private final Runnable bubbleSoundHandler;
+    private final Runnable damageSoundHandler;
 
     // 各項遊戲職責拆分給不同系統，GameController 負責協調系統並處理玩家與勝敗流程
     private final LevelManager levels;
@@ -49,11 +51,18 @@ public final class GameController {
 
     // 建立控制器時只執行一次：載入關卡、建立玩家，並初始化各遊戲系統
     public GameController(Consumer<Boolean> resultHandler) {
+        this(resultHandler, () -> {}, () -> {}, () -> {});
+    }
+
+    public GameController(Consumer<Boolean> resultHandler, Runnable bubbleSoundHandler,
+            Runnable damageSoundHandler, Runnable popSoundHandler) {
         this.resultHandler = resultHandler;
+        this.bubbleSoundHandler = bubbleSoundHandler;
+        this.damageSoundHandler = damageSoundHandler;
         levels = new LevelManager();
         player = new Player(levels.getInitialPlayerX(), levels.getInitialPlayerY());
         collisions = new CollisionSystem(levels.getActiveTiles());
-        bubbles = new BubbleSystem(levels.getEnemies());
+        bubbles = new BubbleSystem(levels.getEnemies(), popSoundHandler);
         enemies = new EnemySystem(levels.getEnemies(), collisions, bubbles);
         boss = new BossSystem(levels.getActiveTiles(), collisions, bubbles);
         transition = new LevelTransition(player, levels);
@@ -91,6 +100,7 @@ public final class GameController {
                 boss.activate();
         }
 
+        int hpBeforeUpdate = player.getHp();
         bubbles.updateCooldown(dt);
         player.updateInvulnerability(dt);
         updatePlayer(dt);
@@ -99,6 +109,8 @@ public final class GameController {
         boss.update(dt, player);
         enemies.checkPlayerContact(player);
         bubbles.checkPlayerContact(player);
+        if (player.getHp() < hpBeforeUpdate)
+            damageSoundHandler.run();
 
         // stream 將敵人集合轉成資料流；allMatch 用來確認是否所有敵人都已被消滅
         boolean allEnemiesDefeated = levels.getEnemies().stream()
@@ -147,8 +159,8 @@ public final class GameController {
         }
         jumpHeld = jump;
 
-        if (keys.contains(KeyCode.Z))
-            bubbles.shoot(player);
+        if (keys.contains(KeyCode.Z) && bubbles.shoot(player))
+            bubbleSoundHandler.run();
 
         // 套用重力後，交由 CollisionSystem 移動玩家並處理地磚碰撞
         player.setVelocityY(player.getVelocityY() + Constants.GRAVITY * dt);
